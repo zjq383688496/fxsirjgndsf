@@ -1,0 +1,39 @@
+/* 全局变量 */
+@dark:       #000;			// 纯黑
+@deep-dark:  #202020;		// 深黑
+@bg-color:   #323232;		// 深黑
+@gray:       #999;			// 灰
+
+@text-color: #e0e0e0;		// 文字主色
+@main:       #f49200;		// 主色(黄)
+@main-high:  #febb5b;		// 主色高亮(黄)
+
+@tran:       transparent;	// 透明
+
+@dl-border:        1px solid transparent;	// 拖拽线边框
+@dl-border-hover:  1px solid @gray;			// 拖拽线边框
+
+
+/* 常用函数 */
+.box-size(@w: 100%, @h: @w) {
+	width:  @w;
+	height: @h;
+}
+.box-full() {
+	.box-size(100vw, 100vh)
+}
+.box-max() {
+	.box-size()
+}
+.box(@type: block, @w: 100%, @h: @w) {
+	display: @type;
+	.box-size(@w, @h)
+}
+
+.icon(@url: 'about:blank') {
+	background: url('icons/@{url}.png') center no-repeat;
+}
+.icon16(@url: 'about:blank') {
+	.box(block, 16px);
+	background: url('icons/@{url}.png') center no-repeat;
+}

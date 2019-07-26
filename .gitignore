@@ -1,0 +1,24 @@
+# 日志
+log
+logs
+*.log
+*.err
+npm-debug.log*
+
+# Bower 插件目录 (https://bower.io/)
+bower_components
+
+# npm 依赖包
+node_modules/
+
+# npm 缓存目录
+.npm
+
+# 参考目录
+koa_test/
+
+package-lock.json
+
+public/
+
+_icons/

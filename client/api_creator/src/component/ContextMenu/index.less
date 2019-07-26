@@ -1,0 +1,50 @@
+@import '../../assets/var.less';
+@import '../../assets/animation.less';
+
+.contextmenu {
+	position: fixed;
+	z-index: 10;
+	top: 0;
+	left: 0;
+	font-size: 12px;
+	cursor: default;
+	&.cm-show {
+		.a-fadeIn(.2s)
+	}
+	&.cm-hide {
+	}
+}
+.cm-list,
+.cm-mask {
+	position: absolute;
+}
+.cm-list {
+	width:  133px;
+	z-index: 1;
+	color: #b4b4b4;
+	background-color: @bg-color;
+	box-shadow: 0 0 4px #000;
+	& > .cm-ul {
+		&:nth-child(n+2) {
+			border-top: 1px solid @deep-dark;
+		}
+	}
+	.cm-li {
+		display: flex;
+		height: 20px;
+		line-height: 20px;
+		align-items: center;
+		padding: 0 5px;
+		&:hover {
+			background-color: @main;
+			color: @deep-dark;
+		}
+	}
+	i {
+		.box(block, 16px);
+		margin-right: 6px;
+	}
+}
+.cm-mask {
+	.box-full();
+}

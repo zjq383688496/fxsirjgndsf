@@ -1,0 +1,42 @@
+var path     = require('path')
+var os       = require('os')
+var pathRoot = process.cwd()
+var webpack  = require('webpack')
+var HtmlWebpackPlugin = require('html-webpack-plugin')
+
+var base = [
+	{
+		test: /\.jsx?$/,
+		use: [
+			{
+					loader: 'thread-loader',
+					options: {
+						workers: os.cpus().length
+					}
+				},
+			'babel-loader'
+		],
+		exclude: /node_modules/,
+		include: [].concat(
+			[ path.join(__dirname, '/../src') ]
+		)
+	},
+]
+var dev = [
+	{
+		test: /\.css/,
+		loader: 'style-loader!css-loader'
+	},
+	{
+		test: /\.less/,
+		loader: 'style-loader!css-loader!less-loader?javascriptEnabled=true'
+	},
+	{
+		test: /\.(jpe?g|png|gif|svg|ttf|woff2?|eot|otf)\??.*$/,
+		loader: 'url-loader?name=[path][name]_[hash:8].[ext]'
+	}
+]
+
+module.exports = {
+	dev: [ ...base, ...dev ]
+}
