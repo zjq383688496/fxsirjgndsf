@@ -1,10 +1,7 @@
 import React from 'react'
-import { types } from '@var'
-import Shapes from './Shape'
-
 import './index.less'
 
-export default class SvgNode extends React.Component {
+export default class Circle extends React.Component {
 	constructor(props) {
 		super(props)
 		var { data } = props,
@@ -26,9 +23,7 @@ export default class SvgNode extends React.Component {
 
 	componentWillReceiveProps(props) {}
 
-	componentWillUnmount() {
-		clearTimeout(this.dragTimeout)
-	}
+	componentWillUnmount() {}
 
 	// 当前节点
 	nodeCur = {
@@ -41,7 +36,6 @@ export default class SvgNode extends React.Component {
 		index: -1,	// 索引值
 	}
 	
-	dragTimeout = null
 	lineInput = []			// 输入线段
 	pointInputIdx = -1		// 当前输入点索引
 
@@ -61,12 +55,8 @@ export default class SvgNode extends React.Component {
 	// 创建输入线段
 	inputLines = () => {
 		var { state, inputGroup, lineInput } = this,
-			{ data }  = state,
-			{ input } = data
-
-		if (!input || !input.length) return
-
-		input.map((_, i) => {
+			{ data } = state
+		data.input.map((_, i) => {
 			lineInput.push(new InputLine(data, i, this, inputGroup))
 		})
 	}
@@ -94,41 +84,23 @@ export default class SvgNode extends React.Component {
 						this.pointInputIdx = i
 						__Node__.dragStart.call(this, e, null)
 					}}
-					onDrag={e => __Node__.dragMove.call(this, e, moveCb, false)}
+					onDrag={e => __Node__.dragMove.call(this, e, moveCb)}
 					onDragEnd={e => __Node__.dragEnd.call(this, e, endCb)}
 				></div>
 			)
 		})
 	}
 	
-	// 节点拖拽开始
-	NodeStart = node => {
-		this.dragTimeout = setTimeout(() => {
-			$(node).addClass('s-active')
-			clearTimeout(this.dragTimeout)
-		}, 16)
-	}
-	// 节点拖拽中
+	// 节点移动中
 	NodeMove = (x, y, node) => {
 		var { lineInput } = this
 		lineInput.forEach(_ => _.init(x, y))
 	}
-	// 节点拖拽结束
+
+	// 节点移动结束
 	NodeEnd = (x, y, node) => {
 		var { Scale } = this.state
-
-		node.style.top  = `${y}px`
-		node.style.left = `${x}px`
-		
 		this.setState({ x, y })
-		$(node).removeClass('s-active')
-	}
-	// 
-	NodeDragEnter = e => {
-		console.log('Enter', e.target.className)
-	}
-	NodeDragLeave = e => {
-		console.log('Leave', e.target.className)
 	}
 
 	// 线段辅点移动中
@@ -159,13 +131,16 @@ export default class SvgNode extends React.Component {
 
 	createStyle = () => {
 		var { data, x, y } = this.state,
-			{ r, w, h }    = data.layout,
-			{ Scale } = __Redux__.Config.NodeInfo
+			{ layout, conf } = this.state.data,
+			{ r } = layout,
+			{ color = '#f1f1f1' } = conf,
+			{ Scale }  = __Redux__.Config.NodeInfo
 		return {
 			top:    y * Scale,
 			left:   x * Scale,
-			width:  (w || (r * 2)) * Scale,
-			height: (h || (r * 2)) * Scale,
+			width:  r * 2 * Scale,
+			height: r * 2 * Scale,
+			backgroundColor: color
 		}
 	}
 
@@ -182,34 +157,28 @@ export default class SvgNode extends React.Component {
 	}
 
 	render() {
-		var { state, props } = this,
-			{ data, isMove } = state,
-			{ conf, id, input } = data,
-			{ color = '#f1f1f1' } = conf,
-			{ name } = props.data,
-			type   = types[name],
+		var { data, isMove } = this.state,
+			{ id, input } = data,
 			style  = this.createStyle(),
 			moveCb = this.NodeMove,
-			endCb  = this.NodeEnd,
-			Shape  = Shapes[type]
-
-		if (!Shape) return null
+			endCb  = this.NodeEnd
 
 		var inputsDrag = this.inputLinesDrag()
 
 		return ([
 			<div
 				key={`${id}_0`}
-				className={`node-child`}
+				className={`node-circle${isMove? ' s-active': ''}`}
 				style={style}
 				draggable="true"
-				onDragStart={e => __Node__.dragStart.call(this, e, this.NodeStart)}
-				onDrag={e => __Node__.dragMove.call(this, e, moveCb, false)}
+				onDragStart={e => __Node__.dragStart.call(this, e)}
+				onDrag={e => __Node__.dragMove.call(this, e, moveCb)}
 				onDragEnd={e => __Node__.dragEnd.call(this, e, endCb)}
-				onDragEnter={this.NodeDragEnter}
-				onDragLeave={this.NodeDragLeave}
-			><Shape color={color} index={id} data={props.data} /></div>,
-			inputsDrag
+				ref="node"
+			></div>,
+			inputsDrag,
+			<div key={`${id}_3`} className="ouput-drag">
+			</div>
 		])
 	}
 }

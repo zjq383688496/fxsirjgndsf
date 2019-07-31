@@ -20,7 +20,8 @@ module.exports = {
 	plugins: [
 		new CopyWebpackPlugin([
 			{ from: './src/static/svg.js', to: 'static/svg.js' },
-			{ from: './src/static/svg.draggable.js', to: 'static/svg.draggable.js' }
+			{ from: './src/static/svg.draggable.js', to: 'static/svg.draggable.js' },
+			{ from: './src/static/zepto.min.js', to: 'static/zepto.js' }
 		]),
 
 		new HtmlWebpackPlugin({

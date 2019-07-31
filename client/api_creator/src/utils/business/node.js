@@ -1,43 +1,73 @@
+var iconDrag,
+	NodeCur = null,
+	NodeTar = null
+
 module.exports = {
-	handleDown: function(e, node, cb) {
+	// 拖拽开始
+	dragStart: function(e, cb) {
 		if (!this.setState) return
-		var { top, left } = node.style,
-			{ clientX, clientY } = e,
+		var { clientX, clientY, target, dataTransfer } = e,
+			{ top, left } = target.style,
 			x = parseInt(left),
 			y = parseInt(top)
-		this.moveNode = node
+
+		// dataTransfer.setDragImage(iconDrag, 0, 0)
+
 		this.moveInfo = { x, y }
-		console.log(this.moveInfo)
 		this.setState({
 			isMove: true,
 			clientX,
-			clientY
+			clientY,
 		})
-		cb && cb()
+		cb && cb(target)
 	},
-	handleMove: function(e, node, cb) {
+	// 拖拽中
+	dragMove: function(e, cb, liveUpdate = true) {
 		var { isMove, clientX, clientY } = this.state
 		if (!isMove) return
-		var { x, y }  = this.moveInfo,
-			{ Scale } = __Redux__.Config.NodeInfo
+		var { target } = e,
+			{ x, y }   = this.moveInfo,
+			{ Scale }  = __Redux__.Config.NodeInfo
+
+		if (!e.clientX && !e.clientY) return
 
 		var nx = x * Scale + (e.clientX - clientX) / Scale,
 			ny = y * Scale + (e.clientY - clientY) / Scale
 
-		node.style.top  = `${ny}px`
-		node.style.left = `${nx}px`
+		if (liveUpdate) {
+			target.style.top  = `${ny}px`
+			target.style.left = `${nx}px`
+		}
 
-		cb && cb(nx, ny, node)
+		cb && cb(nx, ny, target)
 	},
-	handleUp: function(e, node, cb) {
+	// 拖拽结束
+	dragEnd: function(e, cb) {
 		if (!this.setState) return
-		var { top, left } = node.style,
-			x = parseInt(left),
-			y = parseInt(top)
+		var { target } = e,
+			{ top, left } = target.style,
+			{ x, y }   = this.moveInfo,
+			{ Scale }  = __Redux__.Config.NodeInfo,
+			{ clientX, clientY } = this.state
 
+		var nx = x * Scale + (e.clientX - clientX) / Scale,
+			ny = y * Scale + (e.clientY - clientY) / Scale
+
+		this.moveInfo = null
 		this.setState({ isMove: false })
-		cb && cb(x, y, node)
+
+		cb && cb(nx, ny, target)
 	},
+	setNodeCur: obj => {
+		NodeCur = deepCopy(obj)
+	},
+	setNodeTar: obj => {
+		NodeTar = deepCopy(obj)
+	}
+
+
+
+
 	// 创建箭头
 	arrow: function(add) {
 		add.path('M 0,0 L 0,4 L 6,2 z').fill('#000000')
@@ -87,5 +117,9 @@ module.exports = {
 		var x = cx - Math.sin(radian) * r
 			y = cy + Math.cos(radian) * r
 		return { x, y }
+	},
+	// 更新icon
+	updateIconDrag: function(img) {
+		if (img) iconDrag = img
 	}
 }

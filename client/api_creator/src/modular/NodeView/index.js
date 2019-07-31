@@ -1,8 +1,9 @@
 import React from 'react'
 import './index.less'
 
-import { types } from '@var'
-import svg from '@svg'
+import Svg from '@svg'
+
+import iconDrag from 'assets/icons/icon-drag.gif'
 
 export default class NodeView extends React.Component {
 	constructor(props) {
@@ -27,17 +28,16 @@ export default class NodeView extends React.Component {
 
 	renderNode(node, idx) {
 		var { name } = node,
-			type = types[name],
-			Render = svg[`${type}`]
-		if (!Render) return
-		return (<Render key={idx} view={this.View} data={node} idx={idx} />)
-	}
-
-	render_rect = (node, idx) => {
-		var { props, Nodes, View } = this,
-			{ x, y } = node.layout
-		var rect = Nodes[idx] = View.rect(80, 40).move(x, y).fill('rgba(0, 0, 0, .5)')
-		rect.draggable()
+			type = types[name]
+		return (
+			<Svg
+				key={idx}
+				view={this.View}
+				data={node}
+				idx={idx}
+				img={this.refs.img}
+			/>
+		)
 	}
 
 	ergodicNodes = () => {
@@ -49,8 +49,9 @@ export default class NodeView extends React.Component {
 	}
 
 	render() {
-		return (
-			<div className="mv-node-view" ref="_SVG_">{this.Nodes}</div>
-		)
+		return ([
+			<div key={0} className="mv-node-view" ref="_SVG_">{this.Nodes}</div>,
+			<img key={1} src={iconDrag} ref={e => { __Node__.updateIconDrag(e) }} />
+		])
 	}
 }
