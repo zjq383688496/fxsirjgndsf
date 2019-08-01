@@ -23,3 +23,13 @@ export const updateNode = node_data => ({
 	type: types.UPDATE_NODE,
 	node_data
 })
+
+export const updateNodeInput = node_relation_input => ({
+	type: types.UPDATE_NODE_INPUT,
+	node_relation_input
+})
+
+export const updateNodeOutput = node_relation_output => ({
+	type: types.UPDATE_NODE_OUTPUT,
+	node_relation_output
+})

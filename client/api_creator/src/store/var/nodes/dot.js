@@ -5,8 +5,8 @@ module.exports = {
 		y: 0,
 		r: 6,
 	},
-	input: [{ bind: null }],
-	ouput: [{ bind: null }],
+	input:  [{ bind: null }],
+	output: [{ bind: null }],
 	conf: {
 	},
 }

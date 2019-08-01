@@ -9,6 +9,19 @@ export default class Tools extends React.Component {
 
 	componentDidMount() {}
 
+	clearCache = () => {
+		localStorage.removeItem('temporaryData')
+	}
+
+	reload = () => {
+		location.reload()
+	}
+
+	clearReload = () => {
+		localStorage.removeItem('temporaryData')
+		location.reload()
+	}
+
 	render() {
 		return (
 			<div className="mv-tools-view">
@@ -16,6 +29,9 @@ export default class Tools extends React.Component {
 				<a onClick={__Tools__.addNode} data-key={'dot'}>dot</a>
 				<a onClick={__Tools__.addNode} data-key={'input'}>input</a>
 				<a onClick={__Tools__.addNode} data-key={'outer'}>outer</a>
+				<a onClick={this.clearCache}>请空缓存</a>
+				<a onClick={this.reload}>刷新</a>
+				<a onClick={this.clearReload}>清空刷新</a>
 			</div>
 		)
 	}

@@ -25,6 +25,15 @@ module.exports = Object.assign(window, {
 			return obj
 		}
 	},
+	// 对象是否相等
+	objEqual(obj1, obj2) {
+		try {
+			return JSON.stringify(obj1) === JSON.stringify(obj2)
+		} catch(e) {
+			console.error(e)
+			return false
+		}
+	},
 	randomColor() {
 		return ('000000' + (~~((1 << 24) * Math.random())).toString(16)).substr(-6)
 	}

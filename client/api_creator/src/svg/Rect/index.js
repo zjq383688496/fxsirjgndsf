@@ -14,9 +14,9 @@ export default class Rect extends React.Component {
 	componentWillUnmount() {}
 
 	render() {
-		var { color } = this.props,
+		var { color, data } = this.props,
 			style = { backgroundColor: color }
 
-		return <div className="node-rect" style={style}></div>
+		return <div className="node-rect" style={style} data-name={data.name}></div>
 	}
 }

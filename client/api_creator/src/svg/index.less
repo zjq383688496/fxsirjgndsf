@@ -1,4 +1,5 @@
 .node-child {
+	position: absolute;
 	&> div {
 		width: 100%;
 		height: 100%;
@@ -6,8 +7,9 @@
 		box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
 		padding: 2px;
 		cursor: default;
+		font-size: 12px;
 		&::after {
-			content: '';
+			content: attr(data-name);
 			display: flex;
 			justify-content: center;
 			align-items: center;

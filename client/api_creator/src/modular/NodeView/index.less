@@ -5,22 +5,8 @@
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
-	& > div {
-		position: absolute;
-	}
-	.node-mask {
-		position: fixed;
-		width:  100vw;
-		height: 100vh;
-		top:  0;
-		left: 0;
-		z-index: 10;
-		// background-color: rgba(0, 0, 0, .5);
-	}
 	.s-active {
 		z-index: 1;
-		opacity: 0;
-		// pointer-events: none;
 		&> div {
 			&::after {
 				background-color: @main-high;
@@ -34,11 +20,43 @@
 		z-index: 0;
 		width: 40px;
 		height: 40px;
-		// background-color: rgba(0, 0, 0, .5);
+		background-color: rgba(0, 0, 0, .5);
 		border-radius: 100%;
 		cursor: default;
 		// &:hover {
 		// 	background-color: #fff;
 		// }
+	}
+
+	.nv-view-parent,
+	.nv-view-zoom {
+		width: 100%;
+		height: 100%;
+	}
+	.nv-view-zoom {
+		position: relative;
+	}
+	.nv-zoom {
+		position: absolute;
+		top:  10px;
+		left: 10px;
+		width:  64px;
+		height: 80px;
+		display: flex;
+		flex-direction: column;
+
+		background-color: rgba(0, 0, 0, .5);
+		a, span {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		a {
+			height: 32px;
+		}
+		span {
+			flex: 1;
+			font-size: 12px;
+		}
 	}
 }

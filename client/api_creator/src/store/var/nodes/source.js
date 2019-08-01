@@ -6,8 +6,9 @@ module.exports = {
 		w: 80,
 		h: 20,
 	},
-	ouput: [{ bind: null }],
+	output: [{ bind: null }],
 	conf: {
+		color: '#d4a536',
 		ouput: {
 			add: true,
 			max: 0

@@ -3,8 +3,7 @@ import state from '@state'
 
 import { nodes } from '@var'
 
-// var { Workspace, CurPane, MenuState } = state
-var initialState = { ...state }
+var initialState = getSave() || state
 
 export default function business(state = initialState, action) {
 	let {
@@ -12,6 +11,8 @@ export default function business(state = initialState, action) {
 		menu,
 		node_key,
 		node_data,
+		node_relation_input,
+		node_relation_output,
 		pane,
 		work_space,
 	} = action
@@ -37,7 +38,11 @@ export default function business(state = initialState, action) {
 		case types.ADD_NODE:
 			++NodeInfo.Max
 			var { Max } = NodeInfo,
-				node = Object.assign(deepCopy(nodes[node_key]), { id: Max })
+				node = Object.assign(deepCopy(nodes[node_key]), { id: Max }),
+				{ layout } = node,
+				{ x, y, w, h, r } = layout
+			layout.cx = x + (r || w / 2)
+			layout.cy = y + (r || h / 2)
 			Nodes[Max] = node
 			return ReduxUpdate(Object.assign({}, state, {
 				Nodes,
@@ -45,9 +50,36 @@ export default function business(state = initialState, action) {
 			}))
 
 		case types.UPDATE_NODE:
-			var { id } = node_data
+			var { id, layout } = node_data,
+				{ x, y, w, h, r } = layout
+			layout.cx = x + (r || w / 2)
+			layout.cy = y + (r || h / 2)
 			Nodes[id] = node_data
 			return ReduxUpdate(Object.assign({}, state, { Nodes }))
+
+		case types.UPDATE_NODE_INPUT:
+			var { source, target, inputIndex } = node_relation_input,
+				targetInput  = target.input[inputIndex],
+				sourceOutput = source.output[0],
+				orgBind  = sourceOutput.bind
+
+			var orgTarget
+			if (orgBind !== null) orgTarget = deepCopy(Nodes[orgBind.id])
+			if (orgTarget) {
+				orgTarget.input[orgBind.index].bind = null
+				Nodes[orgTarget.id] = orgTarget
+			}
+			sourceOutput.bind = { id: target.id, index: inputIndex }
+			targetInput.bind  = { id: source.id, index: 0 }
+
+			Nodes[source.id] = source
+			Nodes[target.id] = target
+
+			return ReduxUpdate(Object.assign({}, state, { Nodes }))
+
+		case types.UPDATE_NODE_OUTPUT:
+
+			return ReduxUpdate(state)
 
 		default:
 			return ReduxUpdate(state)
@@ -109,5 +141,19 @@ var WS = {
 
 function ReduxUpdate(o) {
 	window.__Redux__.Config = o
+	// autoSave(o)
 	return o
+}
+
+function autoSave(o) {
+	var newData = Object.assign({}, {...o})
+	newData.Self       = null
+	newData.CurPane    = null
+	newData.CurModular = null
+	newData.CurNode    = null
+	localStorage.setItem('temporaryData', JSON.stringify(newData))
+}
+function getSave() {
+	var data = localStorage.getItem('temporaryData')
+	return data? JSON.parse(data): null
 }
