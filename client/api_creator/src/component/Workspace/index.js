@@ -8,9 +8,7 @@ export default class Work extends React.Component {
 		super(props)
 	}
 	createStyle = (type, value) => {
-		var style = {
-			flex: 'initial'
-		}
+		var style = { flex: 'initial' }
 		if (type === 'horizontal') style.width = `${value}vw`
 		else style.height = `${value}vh`
 		return style
@@ -18,7 +16,8 @@ export default class Work extends React.Component {
 	createSpace = (data, parent, idx) => {
 		var { layout, type, components, value } = data
 		var style = {}
-		if (idx && parent) style = this.createStyle(parent.type, value)
+		// if (idx && parent) style = this.createStyle(parent.type, value)
+		if (parent) style = this.createStyle(parent.type, value)
 		var props = {
 			idx,
 			data,

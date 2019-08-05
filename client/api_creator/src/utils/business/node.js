@@ -10,26 +10,22 @@ module.exports = {
 			x = parseInt(left),
 			y = parseInt(top)
 
-		this.moveInfo = { x, y }
-		this.setState({
-			isMove: true,
-			clientX,
-			clientY,
-		})
+		this.moveInfo = { x, y, clientX, clientY }
+		this.setState({ isMove: true })
 		cb && cb(target, data)
 	},
 	// 拖拽中
 	dragMove: function(e, cb, liveUpdate = true) {
-		var { isMove, clientX, clientY } = this.state
+		var { scale }  = this.props,
+			{ isMove } = this.state
 		if (!isMove) return
 		var { target } = e,
-			{ x, y }   = this.moveInfo,
-			{ Scale }  = __Redux__.Config.NodeInfo
+			{ x, y, clientX, clientY }   = this.moveInfo
 
 		if (!e.clientX && !e.clientY) return
 
-		var nx = x + (e.clientX - clientX) / Scale,
-			ny = y + (e.clientY - clientY) / Scale
+		var nx = x + (e.clientX - clientX) / scale,
+			ny = y + (e.clientY - clientY) / scale
 
 		if (liveUpdate) {
 			target.style.top  = `${ny}px`
@@ -41,14 +37,13 @@ module.exports = {
 	// 拖拽结束
 	dragEnd: function(e, cb) {
 		if (!this.setState) return
-		var { target } = e,
+		var { scale }  = this.props,
+			{ target } = e,
 			{ top, left } = target.style,
-			{ x, y }   = this.moveInfo,
-			{ Scale }  = __Redux__.Config.NodeInfo,
-			{ clientX, clientY } = this.state
+			{ x, y, clientX, clientY } = this.moveInfo
 
-		var nx = x + (e.clientX - clientX) / Scale,
-			ny = y + (e.clientY - clientY) / Scale
+		var nx = x + (e.clientX - clientX) / scale,
+			ny = y + (e.clientY - clientY) / scale
 
 		this.moveInfo = null
 		this.setState({ isMove: false })

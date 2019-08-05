@@ -36,5 +36,27 @@ module.exports = Object.assign(window, {
 	},
 	randomColor() {
 		return ('000000' + (~~((1 << 24) * Math.random())).toString(16)).substr(-6)
+	},
+	// 节流
+	_throttle(action, delay = 160) {
+		let last = 0
+		return function() {
+			var curr = +new Date()
+			if (curr - last > delay) {
+				action.apply(this, arguments)
+				last = curr
+			}
+		}
+	},
+	// 防抖
+	_debounce(action, delay = 160) {
+		let timeout
+		return e => {
+			clearTimeout(timeout)
+			e.persist && e.persist()
+			timeout = setTimeout(() => {
+				action(e)
+			}, delay)
+		}
 	}
 })

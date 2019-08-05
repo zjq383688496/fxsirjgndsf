@@ -12,7 +12,7 @@ export default class Tab extends React.Component {
 	state = {
 		idx: 0,
 		pageX: 0,
-		isMove: false,
+		isMove: false
 	}
 	componentDidMount() {
 		this.tabRange()

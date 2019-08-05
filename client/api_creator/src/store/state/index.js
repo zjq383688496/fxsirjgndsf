@@ -50,7 +50,6 @@ module.exports = {
 	// 节点信息
 	NodeInfo: {
 		Max: -1,
-		Scale: 1,
 	},
 	// 节点
 	Nodes: {},
