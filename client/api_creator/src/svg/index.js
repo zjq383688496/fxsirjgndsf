@@ -104,14 +104,15 @@ export default class SvgNode extends React.Component {
 			endCb  = Point.PointEnd
 
 		return lineInput.map((_, i) => {
+			var ipt = input[i],
+				{ bind } = ipt
+
 			var { startX, startY } = _.state,
 				x = startX - 20,
 				y = startY - 20,
 				style = { top: y, left: x },
 				item  = { id: i, data: _, parent: props.data },
 				{ bind } = input[i]
-
-			if (bind) return null
 			
 			return (
 				<div

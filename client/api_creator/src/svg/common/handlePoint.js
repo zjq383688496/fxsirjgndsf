@@ -10,10 +10,10 @@ export class Point {
 		var _self = this._self
 		_self.pointInputIdx = data.id
 		__Node__.setNodeCur({ type: 'input', ...data })
-		_self.dragTimeout = setTimeout(() => {
-			$(node).hide()
-			clearTimeout(_self.dragTimeout)
-		}, 10)
+		// _self.dragTimeout = setTimeout(() => {
+		// 	$(node).hide()
+		// 	clearTimeout(_self.dragTimeout)
+		// }, 10)
 	}
 	// 拖拽中
 	PointMove = (x, y, node) => {
@@ -40,18 +40,19 @@ export class Point {
 				inputIndex: id,
 				target: deepCopy(parent),
 			})
+		} else {
+			line.init()
+			
+			var { startX, startY } = line.state
+
+			node.style.top  = `${startY - 20}px`
+			node.style.left = `${startX - 20}px`
+
+			this._self.pointInputIdx = -1
+			
 		}
 
-		line.init()
-		
-		var { startX, startY } = line.state
-
-		node.style.top  = `${startY - 20}px`
-		node.style.left = `${startX - 20}px`
-
-		this._self.pointInputIdx = -1
-		
-		$(node).show()
+		// $(node).show()
 		
 		__Node__.setNodeCur()
 		__Node__.setNodeTar()
