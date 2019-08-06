@@ -31,16 +31,14 @@ export default class NodeView extends React.Component {
 		this.ergodicNodes()
 	}
 
-	renderNode(node, idx) {
+	renderNode(node) {
 		var { scale } = this.state
-		console.log(scale)
 		return (
 			<Svg
-				key={idx}
+				key={node.id}
 				view={this.View}
 				data={node}
 				lines={this.NodeLines}
-				idx={idx}
 				scale={scale}
 				img={this.refs.img}
 			/>
@@ -52,7 +50,7 @@ export default class NodeView extends React.Component {
 			indexs = Object.keys(Nodes),
 			length = indexs.length
 		if (!length) return
-		this.Nodes = indexs.map(idx => this.renderNode(Nodes[idx], +idx))
+		this.Nodes = indexs.map(idx => this.renderNode(Nodes[idx]))
 		this.setState({ update: 1 })
 	}
 

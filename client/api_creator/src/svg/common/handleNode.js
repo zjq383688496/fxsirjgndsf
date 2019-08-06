@@ -43,9 +43,6 @@ export class Node {
 			{ layout } = data
 		
 		$(node).show().removeClass('s-active')
-
-		node.style.top  = `${y}px`
-		node.style.left = `${x}px`
 		
 		_self.setState({ x, y })
 

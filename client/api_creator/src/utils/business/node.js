@@ -1,6 +1,8 @@
 var NodeCur = {},
 	NodeTar = {}
 
+var { abs, atan, cos, sin, PI } = Math
+
 module.exports = {
 	// 拖拽开始
 	dragStart: function(e, cb, data) {
@@ -11,7 +13,9 @@ module.exports = {
 			y = parseInt(top)
 
 		this.moveInfo = { x, y, clientX, clientY }
+
 		this.setState({ isMove: true })
+
 		cb && cb(target, data)
 	},
 	// 拖拽中
@@ -65,46 +69,44 @@ module.exports = {
 			add.path('M 0,0 L 0,4 L 6,2 z').fill('#000000')
 		})
 	},
+
 	// 获取交点(矩形)
-	// getPointRect: function ({ sx, sy }, rect) {
-	// 	// 初始变量
-	// 	var w    = rect.width(),	// 矩形宽
-	// 		h    = rect.height(),	// 矩形高
-	// 		x    = rect.x(),		// 矩形 x 坐标
-	// 		y    = rect.y(),		// 矩形 y 坐标
-	// 		cx   = x + w / 2,		// 矩形 中心坐标 x
-	// 		cy   = y + h / 2,		// 矩形 中心坐标 y
-	// 		ax   = sx < cx? 1: -1,	// 轴坐标 x -1 || 1
-	// 		ay   = sy < cy? 1: -1,	// 轴坐标 y -1 || 1
-	// 		px   = sx < cx? 'left': 'right',			// 轴坐标 x 左 || 有
-	// 		py   = sy < cy? 'top' : 'bottom',			// 轴坐标 y 上 || 下
-	// 		tanR = Math.abs((cy - y)  / (cx - x)),		// 正切 矩形对角
-	// 		tanL = Math.abs((cy - sy) / (cx - sx)),		// 正切 线对角
-	// 		pos  = tanR > tanL? px: py					// 最终轴
+	getPointRect: function ({ startX, startY }, { x, y, w, h, cx, cy }) {
+		// 初始变量
+		var centerX = cx,		// 矩形 中心坐标 x
+			centerY = cy,		// 矩形 中心坐标 y
+			axisX   = startX < centerX? 1: -1,	// 轴坐标 x -1 || 1
+			axisY   = startY < centerY? 1: -1,	// 轴坐标 y -1 || 1
+			px   = startX < centerX? 'left': 'right',				// 轴坐标 x 左 || 有
+			py   = startY < centerY? 'top' : 'bottom',				// 轴坐标 y 上 || 下
+			tanR = abs((centerY - y) / (centerX - x)),				// 正切 矩形对角
+			tanL = abs((centerY - startY) / (centerX - startX)),	// 正切 线对角
+			pos  = tanR > tanL? px: py								// 最终轴
 
-	// 	var axia = ({ top: 'y', right: 'x', bottom: 'y', left: 'x' })[pos],
-	// 		line = ({
-	// 		top:    { x, y },
-	// 		right:  { x: x + w, y },
-	// 		bottom: { x, y: y + h },
-	// 		left:   { x, y },
-	// 	})[pos]
+		var axia = ({ top: 'y', right: 'x', bottom: 'y', left: 'x' })[pos],
+			line = ({
+			top:    { x, y },
+			right:  { x: x + w, y },
+			bottom: { x, y: y + h },
+			left:   { x, y },
+		})[pos]
 
-	// 	var X = axia === 'x'? line.x: cx - (cy - line.y) / tanL * ax * ay,
-	// 		Y = axia === 'y'? line.y: cy - (cx - line.x) * tanL * ax * ay
+		var X = axia === 'x'? line.x: centerX - (centerY - line.y) / tanL * axisX * axisY,
+			Y = axia === 'y'? line.y: centerY - (centerX - line.x) * tanL * axisX * axisY
 
-	// 	return { x: X, y: Y }
-	// },
+		return { x: X, y: Y }
+	},
+
 	// 获取交点(圆形)
-	// getPointCircle: function ({ sx, sy }, { cx, cy, r }) {
-	// 	// 初始变量
-	// 	var dx     = cx - sx,
-	// 		dy     = cy - sy,
-	// 		px     = sx < cx? 90: 270,	// 轴坐标 x 左 || 有
-	// 		angle  = 360 * Math.atan(dy / dx) / (2 * Math.PI) + px,
-	// 		radian = (2 * Math.PI / 360) * angle
-	// 	var x = cx - Math.sin(radian) * r
-	// 		y = cy + Math.cos(radian) * r
-	// 	return { x, y }
-	// }
+	getPointCircle: function ({ startX, startY }, { cx, cy, r }) {
+		// 初始变量
+		var dx     = cx - startX,
+			dy     = cy - startY,
+			px     = startX < cx? 90: 270,	// 轴坐标 x 左 || 有
+			angle  = 360 * atan(dy / dx) / (2 * Math.PI) + px,
+			radian = (2 * PI / 360) * angle,
+			x = cx - sin(radian) * r,
+			y = cy + cos(radian) * r
+		return { x, y }
+	}
 }

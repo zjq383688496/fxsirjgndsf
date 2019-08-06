@@ -48,7 +48,6 @@ export default class Tab extends React.Component {
 	}
 	close = (e, index) => {
 		e.stopPropagation()
-		__Redux__
 		var { data } = this.props,
 			{ actions, Config } = __Redux__,
 			{ components } = data
@@ -60,6 +59,9 @@ export default class Tab extends React.Component {
 		if (!this.range.length) return
 		var { pageX } = e
 		this.setState({ pageX, isMove: true })
+		
+		// 初始化目标节点索引
+		this.reIdx = null
 	}
 	mousemove = e => {
 		var { nodes, range, reIdx, state, tabs } = this,

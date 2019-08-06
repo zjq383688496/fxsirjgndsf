@@ -74,7 +74,6 @@ export default class ContextMenu extends React.Component {
 	}
 	handlerClick = (e, key, type) => {
 		var fn = this._Menu_[`${key}`]
-		console.log(key, type)
 		if (fn) fn.bind(window.__Redux__.Config.Self, key, type)()
 		this.close()
 	}

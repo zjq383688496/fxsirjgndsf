@@ -10,10 +10,6 @@ export class Point {
 		var _self = this._self
 		_self.pointInputIdx = data.id
 		__Node__.setNodeCur({ type: 'input', ...data })
-		// _self.dragTimeout = setTimeout(() => {
-		// 	$(node).hide()
-		// 	clearTimeout(_self.dragTimeout)
-		// }, 10)
 	}
 	// 拖拽中
 	PointMove = (x, y, node) => {
@@ -33,6 +29,8 @@ export class Point {
 			NodeTar = __Node__.getNodeTar(),
 			is      = pointAllowTypeMap[NodeTar.type]
 
+		line.init()
+
 		if (is) {
 			delete NodeTar.type
 			__Redux__.actions.updateNodeInput({
@@ -41,16 +39,15 @@ export class Point {
 				target: deepCopy(parent),
 			})
 		} else {
-			line.init()
 			
-			var { startX, startY } = line.state
+			// var { startX, startY } = line.state
 
-			node.style.top  = `${startY - 20}px`
-			node.style.left = `${startX - 20}px`
+			// node.style.top  = `${startY - 20}px`
+			// node.style.left = `${startX - 20}px`
 
-			this._self.pointInputIdx = -1
 			
 		}
+		this._self.pointInputIdx = -1
 
 		// $(node).show()
 		
@@ -60,12 +57,12 @@ export class Point {
 	// 拖拽接触
 	PointDragEnter = (e, data) => {
 		__Node__.setNodeTar({ type: 'input', ...data })
-		console.log('PointEnter', e.target.className)
+		// console.log('PointEnter', e.target.className)
 	}
 	// 拖拽离开
 	PointDragLeave = e => {
 		__Node__.setNodeTar()
-		console.log('PointLeave', e.target.className)
+		// console.log('PointLeave', e.target.className)
 	}
 }
 

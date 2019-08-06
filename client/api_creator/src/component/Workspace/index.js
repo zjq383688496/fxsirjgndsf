@@ -16,7 +16,6 @@ export default class Work extends React.Component {
 	createSpace = (data, parent, idx) => {
 		var { layout, type, components, value } = data
 		var style = {}
-		// if (idx && parent) style = this.createStyle(parent.type, value)
 		if (parent) style = this.createStyle(parent.type, value)
 		var props = {
 			idx,
