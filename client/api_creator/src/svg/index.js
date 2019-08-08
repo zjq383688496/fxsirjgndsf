@@ -36,14 +36,17 @@ export default class SvgNode extends React.Component {
 	componentDidMount() {}
 
 	componentWillReceiveProps(props) {
-		var { data }  = this.state,
-			newData   = props.data,
-			{ input } = newData,
-			{ lineInput } = this
+		var { lineInput, state } = this,
+			{ data, x, y } = state,
+			newData    = deepCopy(props.data),
+			{ layout } = newData,
+			{ cx, cy } = layout,
+			{ input }  = newData
 		if (!objEqual(data, newData)) {
 			this.setState({ data: newData }, () => {
 				lineInput.forEach((_, i) => {
-					_._data = input[i]
+					_.data = newData
+					console.log('1. update')
 					_.init()
 				})
 			})
@@ -78,7 +81,7 @@ export default class SvgNode extends React.Component {
 		if (!input || !input.length) return
 
 		input.map((_, i) => {
-			this.lineInput.push(new InputLine(data, i, this, inputGroup, _))
+			this.lineInput.push(new InputLine(data, i, this, inputGroup))
 		})
 	}
 
@@ -92,8 +95,8 @@ export default class SvgNode extends React.Component {
 			var ipt = input[i],
 				{ bind } = ipt
 			
-			var inputPoint  = <DragPoint key={0} type="in"  idx={i} data={data} scale={scale} line={_} lineInput={lineInput} />,
-				outputPoint = <DragPoint key={1} type="out" idx={i} data={data} scale={scale} line={_} lineInput={lineInput} />,
+			var inputPoint  = <DragPoint key={0} type="out" idx={i} data={data} scale={scale} line={_} lineInput={lineInput} />,
+				outputPoint = <DragPoint key={1} type="in"  idx={i} data={data} scale={scale} line={_} lineInput={lineInput} />,
 				points = [inputPoint]
 
 			if (bind != null) points.push(outputPoint)

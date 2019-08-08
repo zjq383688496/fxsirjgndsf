@@ -7,7 +7,6 @@ module.exports = {
 		h: 20,
 	},
 	input:  [{ bind: null }],
-	output: [{ bind: null }],
 	conf: {
 	},
 }

@@ -36,9 +36,9 @@ export default class DragPoint extends React.Component {
 		var { r, h, w } = layout
 		if (w && h) return __Node__.getPointRect(sourcePos, layout)
 		else if (r) {
-			if (r < 20) {
+			if (r < 12) {
 				layout = deepCopy(layout)
-				layout.r = 20
+				layout.r = 12
 			}
 			return __Node__.getPointCircle(sourcePos, layout)
 		}
@@ -51,18 +51,20 @@ export default class DragPoint extends React.Component {
 			point, x, y, style
 
 		if (bind === null) {
-			x = startX - 20
-			y = startY - 20
+			x = startX - 10
+			y = startY - 10
 		} else {
-			if (type === 'in') {
+			var { id, index } = bind,
+				{ cx, cy } = __Redux__.Config.Nodes[id].layout
+			if (type === 'out') {
 				var { id, index } = bind,
 					node = __Redux__.Config.Nodes[id]
 				point = this.getSidePos(node.layout, { startX: endX, startY: endY })
 			} else {
-				point = this.getSidePos(layout, { startX, startY })
+				point = this.getSidePos(layout, { startX: cx, startY: cy })
 			}
-			x = point.x - 20
-			y = point.y - 20
+			x = point.x - 10
+			y = point.y - 10
 		}
 		style = { top: y, left: x }
 
@@ -86,7 +88,7 @@ export default class DragPoint extends React.Component {
 				style={style}
 				draggable="true"
 				onDragStart={e => __Node__.dragStart.call(this, e, Point.PointStart, item)}
-				onDrag={e => __Node__.dragMove.call(this, e, Point.PointMove, false)}
+				onDrag={e => __Node__.dragMove.call(this, e, Point.PointMove, false, type)}
 				onDragEnd={e => __Node__.dragEnd.call(this, e, Point.PointEnd)}
 				onDragEnter={e => Point.PointDragEnter(e, item)}
 				onDragLeave={Point.PointDragLeave}

@@ -1,8 +1,8 @@
 var { abs, pow, sqrt } = Math
 
 export class InputLine {
-	constructor(data, index, parent, group, _data) {
-		Object.assign(this, { data, index, parent, group, _data })
+	constructor(data, index, parent, group) {
+		Object.assign(this, { data, index, parent, group })
 
 		this.state = {
 			isMove: false,
@@ -10,67 +10,83 @@ export class InputLine {
 			startY: 0,
 			endX: 0,
 			endY: 0,
-			startForce: false,
+			// centerX: 0,
+			// centerY: 0,
 		}
 
 		this.init()
 	}
+	color = '#000'
 	// 初始化
-	// targetX: 目标点 X
-	// targetY: 目标点 Y
-	// startX:  起始点 X
-	// startY:  起始点 Y
-	// startForce: 强制使用起始点
-	init = (targetX, targetY, startX, startY, startForce = false) => {
-		var { data, index, parent } = this,
-			{ props, state }  = parent,
-			{ input, layout } = props.data,
-			length = input.length,
-			{ w, h, r } = layout,
-			x  = targetX || state.x,
-			y  = targetY || state.y,
-			cx = r? x + r: x + w / 2,									// 目标中点 X
-			cy = r? y + r: y + h / 2,									// 目标中点 Y
-			sx = startX || (cx + (-length * 40 / 2) + index * 40),		// 线段默认开始点 X
-			sy = startY || (cy - 40	)									// 线段默认开始点 Y
+	// startX: 起始点 X
+	// startY: 起始点 Y
+	// endX:   终点 X
+	// endY:   终点 Y
+	// color:  样式
+	init = (startX, startY, endX, endY, color = '#000') => {
+		var { data, index } = this,
+			{ layout, input } = data,
+			{ cx, cy, w, h, r } = layout,
+			{ bind, init = {} } = input[index]
 
-		Object.assign(this.state, {
-			startX: sx,
-			startY: sy,
-			endX:   cx,
-			endY:   cy,
-			startForce
-		})
+		// 起始坐标
+		if (!startX && !startY) {
+			if (bind) {
+				var { id, index } = bind,
+					lay = __Redux__.Config.Nodes[id].layout
+				startX = lay.cx
+				startY = lay.cy
+			} else {
+				var { offsetX = -20, offsetY = -40 } = init
+				startX = (endX || cx) + offsetX
+				startY = (endY || cy) + offsetY
+			}
+		}
+		
+		// 结束坐标
+		if (!endX && !endY) {
+			var startPos = { startX, startY },
+				point
+			if (w && h) {
+				point = __Node__.getPointRect(startPos, layout)
+			} else if (r) {
+				point = __Node__.getPointCircle(startPos, layout)
+			}
+			endX = point.x
+			endY = point.y
+		}
+
+		// var centerX = startX + (endX - startX) / 2,
+		// 	centerY = startY + (endY - startY) / 2
+
+		var newState = {
+			startX,
+			startY,
+			endX,
+			endY,
+			// centerX,
+			// centerY,
+		}
+		if (color) this.color = color
+		Object.assign(this.state, newState)
 
 		this.draw()
 	}
 	draw = () => {
-		var { group, parent, state, _data } = this,
-			{ startX, startY, endX, endY, startForce, inPos, outPos } = state,
-			{ bind } = _data
-
-
-		if (bind) {
-			if (!startForce) {
-				var { id } = bind,
-					node = __Redux__.Config.Nodes[id]
-
-				if (node) {
-					var { cx, cy } = node.layout
-					state.startX = startX = cx
-					state.startY = startY = cy
-				}
-			}
-		}
-
-		var centerX = startX + (endX - startX) / 2,
-			centerY = startY + (endY - startY) / 2
+		var { color, group, state } = this,
+			{ centerX, centerY, startX, startY, endX, endY } = state
 
 		if (!this.line) {
-			this.line = group.path(`M ${startX},${startY} L ${centerX},${centerY} ${endX},${endY}`).stroke({ width: 2, color: '#000' })
-			this.line.marker('end', __Node__._arrow)
+			// this.line  = group.path(`M ${startX},${startY} L ${centerX},${centerY} ${endX},${endY}`).stroke({ width: 2, color })
+			this.line  = group.path(`M ${startX},${startY} L ${endX},${endY}`).stroke({ width: 2, color })
+			
+			var arrow = group.marker(8, 4, add => {
+				this.arrow = add.path('M 0,0 L 0,4 L 6,2 z').fill(color)//.center(3, 2)
+			})
+			this.line.marker('end', arrow)
 		} else {
-			this.line.plot(`M ${startX},${startY} L ${centerX},${centerY} ${endX},${endY}`)
+			this.line.plot(`M ${startX},${startY} L ${endX},${endY}`).stroke(color)
+			this.arrow.fill(color)
 		}
 	}
 }

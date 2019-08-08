@@ -24,12 +24,12 @@ export const updateNode = node_data => ({
 	node_data
 })
 
-export const updateNodeInput = node_relation_input => ({
-	type: types.UPDATE_NODE_INPUT,
-	node_relation_input
+export const nodeConnect = node_connect => ({
+	type: types.NODE_CONTENT,
+	node_connect
 })
 
-export const updateNodeOutput = node_relation_output => ({
-	type: types.UPDATE_NODE_OUTPUT,
-	node_relation_output
+export const nodeDisconnect = node_disconnect => ({
+	type: types.NODE_DISCONTENT,
+	node_disconnect
 })

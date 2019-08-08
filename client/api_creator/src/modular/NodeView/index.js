@@ -14,6 +14,7 @@ export default class NodeView extends React.Component {
 	}
 
 	NodeLines = {}
+	SourceMap = {}
 
 	maxW = 8192		// 最大分辨率 8K
 	maxH = 8192		// 最大分辨率 8K
@@ -28,17 +29,32 @@ export default class NodeView extends React.Component {
 	}
 
 	componentWillReceiveProps(props) {
+		this.SourceMap = {}
 		this.ergodicNodes()
 	}
 
 	renderNode(node) {
-		var { scale } = this.state
+		var { SourceMap } = this,
+			{ scale } = this.state,
+			{ input } = node
+
+		// 更新来源映射列表
+		if (input) {
+			input.forEach(({ bind }, i) => {
+				if (!bind) return
+				var { id } = bind
+				if (!SourceMap[id]) SourceMap[id] = {}
+				SourceMap[id][node.id] = i
+			})
+		}
+
 		return (
 			<Svg
 				key={node.id}
 				view={this.View}
 				data={node}
 				lines={this.NodeLines}
+				sourceMap={this.SourceMap}
 				scale={scale}
 				img={this.refs.img}
 			/>

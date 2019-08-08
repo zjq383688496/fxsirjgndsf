@@ -19,7 +19,7 @@ module.exports = {
 		cb && cb(target, data)
 	},
 	// 拖拽中
-	dragMove: function(e, cb, liveUpdate = true) {
+	dragMove: function(e, cb, liveUpdate = true, data) {
 		var { scale }  = this.props,
 			{ isMove } = this.state
 		if (!isMove) return
@@ -36,10 +36,10 @@ module.exports = {
 			target.style.left = `${nx}px`
 		}
 
-		cb && cb(nx, ny, target)
+		cb && cb(nx, ny, target, data)
 	},
 	// 拖拽结束
-	dragEnd: function(e, cb) {
+	dragEnd: function(e, cb, data) {
 		if (!this.setState) return
 		var { scale }  = this.props,
 			{ target } = e,
@@ -51,7 +51,7 @@ module.exports = {
 
 		this.moveInfo = null
 		this.setState({ isMove: false })
-		cb && cb(nx, ny, target)
+		cb && cb(nx, ny, target, data)
 	},
 	// 当前&目标 节点相关
 	setNodeCur: obj => {
@@ -72,6 +72,10 @@ module.exports = {
 
 	// 获取交点(矩形)
 	getPointRect: function ({ startX, startY }, { x, y, w, h, cx, cy }) {
+		x = x - 4
+		y = y - 4
+		w = w + 8
+		h = h + 8
 		// 初始变量
 		var centerX = cx,		// 矩形 中心坐标 x
 			centerY = cy,		// 矩形 中心坐标 y
@@ -99,6 +103,7 @@ module.exports = {
 
 	// 获取交点(圆形)
 	getPointCircle: function ({ startX, startY }, { cx, cy, r }) {
+		r = r + 4
 		// 初始变量
 		var dx     = cx - startX,
 			dy     = cy - startY,

@@ -11,8 +11,8 @@ export default function business(state = initialState, action) {
 		menu,
 		node_key,
 		node_data,
-		node_relation_input,
-		node_relation_output,
+		node_connect,
+		node_disconnect,
 		pane,
 		work_space,
 	} = action
@@ -57,29 +57,19 @@ export default function business(state = initialState, action) {
 			Nodes[id] = node_data
 			return ReduxUpdate(Object.assign({}, state, { Nodes }))
 
-		case types.UPDATE_NODE_INPUT:
-			var { source, target, inputIndex } = node_relation_input,
-				targetInput  = target.input[inputIndex],
-				sourceOutput = source.output[0],
-				orgBind  = sourceOutput.bind
-
-			var orgTarget
-			if (orgBind !== null) orgTarget = deepCopy(Nodes[orgBind.id])
-			if (orgTarget) {
-				orgTarget.input[orgBind.index].bind = null
-				Nodes[orgTarget.id] = orgTarget
-			}
-			sourceOutput.bind = { id: target.id, index: inputIndex }
-			targetInput.bind  = { id: source.id, index: 0 }
-
-			Nodes[source.id] = source
+		case types.NODE_CONTENT:
+			var { source, target, targetIndex } = node_connect,
+				targetInput = target.input[targetIndex]
+			target.input[targetIndex].bind = { id: source.id, index: 0 }
 			Nodes[target.id] = target
-
 			return ReduxUpdate(Object.assign({}, state, { Nodes }))
 
-		case types.UPDATE_NODE_OUTPUT:
-
-			return ReduxUpdate(state)
+		case types.NODE_DISCONTENT:
+			var { target, targetIndex } = node_disconnect,
+				targetInput = target.input[targetIndex]
+			target.input[targetIndex].bind = null
+			Nodes[target.id] = target
+			return ReduxUpdate(Object.assign({}, state, { Nodes }))
 
 		default:
 			return ReduxUpdate(state)
