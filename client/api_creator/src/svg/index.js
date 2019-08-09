@@ -37,19 +37,30 @@ export default class SvgNode extends React.Component {
 
 	componentWillReceiveProps(props) {
 		var { lineInput, state } = this,
-			{ data, x, y } = state,
-			newData    = deepCopy(props.data),
-			{ layout } = newData,
-			{ cx, cy } = layout,
-			{ input }  = newData
+			{ data } = state,
+			newData  = deepCopy(props.data)
 		if (!objEqual(data, newData)) {
+			console.log('1. update')
 			this.setState({ data: newData }, () => {
+				var { lines, sourceMap } = props,
+					source = sourceMap[data.id]
+
+				// 输入线更新
 				lineInput.forEach((_, i) => {
 					_.data = newData
-					console.log('1. update')
 					_.init()
 				})
+				
+				// 输入线更新
+				if (source) {
+					Object.keys(source).forEach(_ => {
+						var line = lines[_][source[_]]
+						line.init()
+					})
+				}
 			})
+		} else {
+			console.log('1. not update')
 		}
 	}
 
@@ -120,7 +131,7 @@ export default class SvgNode extends React.Component {
 		var { state, props, Node } = this,
 			{ data } = state,
 			{ conf, id, input } = data,
-			{ color = '#f1f1f1' } = conf,
+			{ color = '#eaeaea' } = conf,
 			{ name } = props.data,
 			type   = types[name],
 			style  = this.createStyle(),

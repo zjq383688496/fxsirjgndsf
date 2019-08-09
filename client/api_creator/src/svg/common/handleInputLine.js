@@ -46,18 +46,21 @@ export class InputLine {
 		// 结束坐标
 		if (!endX && !endY) {
 			var startPos = { startX, startY },
-				point
-			if (w && h) {
-				point = __Node__.getPointRect(startPos, layout)
-			} else if (r) {
-				point = __Node__.getPointCircle(startPos, layout)
+				point = __Node__.getPoint(startPos, layout)
+			
+			if ((point.x + '') === 'NaN') {
+				debugger
+				__Node__.getPoint(startPos, layout)
 			}
+			
 			endX = point.x
 			endY = point.y
 		}
 
+
 		// var centerX = startX + (endX - startX) / 2,
 		// 	centerY = startY + (endY - startY) / 2
+		
 
 		var newState = {
 			startX,
@@ -71,6 +74,8 @@ export class InputLine {
 		Object.assign(this.state, newState)
 
 		this.draw()
+
+		return newState
 	}
 	draw = () => {
 		var { color, group, state } = this,

@@ -19,6 +19,11 @@ export const addNode = node_key => ({
 	node_key
 })
 
+export const selectNode = node_id => ({
+	type: types.SELECT_NODE,
+	node_id
+})
+
 export const updateNode = node_data => ({
 	type: types.UPDATE_NODE,
 	node_data

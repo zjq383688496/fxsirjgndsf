@@ -10,6 +10,7 @@ export default function business(state = initialState, action) {
 		_this,
 		menu,
 		node_key,
+		node_id,
 		node_data,
 		node_connect,
 		node_disconnect,
@@ -57,11 +58,21 @@ export default function business(state = initialState, action) {
 			Nodes[id] = node_data
 			return ReduxUpdate(Object.assign({}, state, { Nodes }))
 
+		case types.SELECT_NODE:
+			if (node_id !== state.CurNode) {
+				state.CurNode = node_id
+				return ReduxUpdate(Object.assign({}, state, { Nodes }))
+			}
+
 		case types.NODE_CONTENT:
-			var { source, target, targetIndex } = node_connect,
+			var { source, target, targetIndex, unbind, unbindIndex } = node_connect,
 				targetInput = target.input[targetIndex]
 			target.input[targetIndex].bind = { id: source.id, index: 0 }
 			Nodes[target.id] = target
+			if (unbind) {
+				unbind.input[unbindIndex].bind = null
+				Nodes[unbind.id] = unbind
+			}
 			return ReduxUpdate(Object.assign({}, state, { Nodes }))
 
 		case types.NODE_DISCONTENT:

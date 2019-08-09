@@ -7,6 +7,6 @@ module.exports = {
 		h: 20,
 	},
 	conf: {
-		color: '#d4a536'
+		color: '#f09653'
 	},
 }

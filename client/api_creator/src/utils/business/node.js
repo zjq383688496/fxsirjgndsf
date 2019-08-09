@@ -1,11 +1,12 @@
-var NodeCur = {},
-	NodeTar = {}
+var NodeCur,
+	NodeTar,
+	offsetPixel = 4
 
 var { abs, atan, cos, sin, PI } = Math
 
 module.exports = {
 	// 拖拽开始
-	dragStart: function(e, cb, data) {
+	dragStart: function(e, cb, data, type) {
 		if (!this.setState) return
 		var { clientX, clientY, target } = e,
 			{ top, left } = target.style,
@@ -16,20 +17,21 @@ module.exports = {
 
 		this.setState({ isMove: true })
 
-		cb && cb(target, data)
+		cb && cb(target, data, type)
 	},
 	// 拖拽中
 	dragMove: function(e, cb, liveUpdate = true, data) {
-		var { scale }  = this.props,
-			{ isMove } = this.state
+		var { moveInfo, props, state } = this,
+			{ scale }  = props,
+			{ isMove } = state
 		if (!isMove) return
 		var { target } = e,
-			{ x, y, clientX, clientY }   = this.moveInfo
+			{ x, y, clientX, clientY } = moveInfo
 
 		if (!e.clientX && !e.clientY) return
 
-		var nx = x + (e.clientX - clientX) / scale,
-			ny = y + (e.clientY - clientY) / scale
+		var nx = moveInfo.nx = x + (e.clientX - clientX) / scale,
+			ny = moveInfo.ny = y + (e.clientY - clientY) / scale
 
 		if (liveUpdate) {
 			target.style.top  = `${ny}px`
@@ -49,19 +51,19 @@ module.exports = {
 		var nx = x + (e.clientX - clientX) / scale,
 			ny = y + (e.clientY - clientY) / scale
 
-		this.moveInfo = null
-		this.setState({ isMove: false })
 		cb && cb(nx, ny, target, data)
+		this.setState({ isMove: false })
+		this.moveInfo = null
 	},
 	// 当前&目标 节点相关
 	setNodeCur: obj => {
-		NodeCur = obj || {}
+		NodeCur = obj
 	},
 	setNodeTar: obj => {
-		NodeTar = obj || {}
+		NodeTar = obj
 	},
-	getNodeCur: () => NodeCur || {},
-	getNodeTar: () => NodeTar || {},
+	getNodeCur: () => NodeCur,
+	getNodeTar: () => NodeTar,
 
 	// 创建箭头
 	createArrow: function(draw) {
@@ -72,10 +74,10 @@ module.exports = {
 
 	// 获取交点(矩形)
 	getPointRect: function ({ startX, startY }, { x, y, w, h, cx, cy }) {
-		x = x - 4
-		y = y - 4
-		w = w + 8
-		h = h + 8
+		x = x - offsetPixel
+		y = y - offsetPixel
+		w = w + offsetPixel * 2
+		h = h + offsetPixel * 2
 		// 初始变量
 		var centerX = cx,		// 矩形 中心坐标 x
 			centerY = cy,		// 矩形 中心坐标 y
@@ -107,11 +109,19 @@ module.exports = {
 		// 初始变量
 		var dx     = cx - startX,
 			dy     = cy - startY,
-			px     = startX < cx? 90: 270,	// 轴坐标 x 左 || 有
+			px     = startX <= cx? 90: 270,	// 轴坐标 x 左 || 有
 			angle  = 360 * atan(dy / dx) / (2 * Math.PI) + px,
 			radian = (2 * PI / 360) * angle,
 			x = cx - sin(radian) * r,
 			y = cy + cos(radian) * r
+		// console.log('r:', r)
 		return { x, y }
+	},
+
+	// 获取交点
+	getPoint: function(start, layout) {
+		var { w, h, r } = layout,
+			fun = this[`getPoint${r? 'Circle': 'Rect'}`]
+		return fun(start, layout)
 	}
 }

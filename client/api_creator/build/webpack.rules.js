@@ -29,7 +29,7 @@ var dev = [
 	},
 	{
 		test: /\.less/,
-		loader: 'style-loader!css-loader!less-loader?javascriptEnabled=true'
+		loader: 'style-loader?sourceMap=true!css-loader?sourceMap=true!less-loader?sourceMap=true&javascriptEnabled=true'
 	},
 	{
 		test: /\.(jpe?g|png|gif|svg|ttf|woff2?|eot|otf)\??.*$/,

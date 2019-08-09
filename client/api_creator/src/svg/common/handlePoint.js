@@ -1,15 +1,13 @@
 /* 辅点相关 */
-var pointAllowTypeMap = { node: 1 }
-
 export class Point {
 	constructor(props) {
 		this._self = props
 	}
 	// 拖拽开始
-	PointStart = (node, data) => {
-		var _self = this._self
+	PointStart = (node, data, type) => {
+		var { _self } = this
 		_self.pointInputIdx = data.id
-		__Node__.setNodeCur({ type: 'input', ...data })
+		__Node__.setNodeCur({ type, ...data })
 	}
 	// 拖拽中
 	PointMove = (x, y, node, type) => {
@@ -21,15 +19,14 @@ export class Point {
 
 		switch (type) {
 			case 'out':
-				console.log('3. move point input')
+				// console.log('3. move point input')
 				line.init(x + 5, y + 5, null, null, '#fff')
 				break
 			case 'in':
-				console.log('3. move point output')
+				// console.log('3. move point output')
 				line.init(null, null, x + 5, y + 5)
 				break
-			default:
-				break
+			default: break
 		}
 	}
 	// 拖拽结束
@@ -38,38 +35,60 @@ export class Point {
 			{ type } = props,
 			line     = lineInput[pointInputIdx],
 			{ id, parent } = __Node__.getNodeCur(),
+			{ input } = parent,
+			{ bind } = input[pointInputIdx],
 			NodeTar = __Node__.getNodeTar(),
-			is      = pointAllowTypeMap[NodeTar.type] && parent.id !== NodeTar.id
+			is
+		debugger
+		switch (type) {
+			case 'out':
+				is = NodeTar && parent.id !== NodeTar.id
+				if (is) {
+					__Redux__.actions.nodeConnect({
+						source: deepCopy(NodeTar),
+						target: deepCopy(parent),
+						targetIndex: id,
+					})
+				} else {
+					__Redux__.actions.nodeDisconnect({
+						target: deepCopy(parent),
+						targetIndex: id,
+					})
+				}
+				console.log('4. end point input')
+				break
+			case 'in':
+				is = NodeTar && NodeTar.input && (bind.id !== NodeTar.id && parent.id !== NodeTar.id)
+				if (is) {
+					__Redux__.actions.nodeConnect({
+						source: deepCopy(__Redux__.Config.Nodes[bind.id]),
+						target: deepCopy(NodeTar),
+						targetIndex: 0,
+						unbind: deepCopy(parent),
+						unbindIndex: pointInputIdx
+					})
+				}
+				console.log('4. end point output')
+				break
+			default: break
+		}
 
 		line.init()
 
-		if (is) {
-			delete NodeTar.type
-			__Redux__.actions.nodeConnect({
-				source: deepCopy(NodeTar),
-				target: deepCopy(parent),
-				targetIndex: id,
-			})
-		} else {
-			__Redux__.actions.nodeDisconnect({
-				target: deepCopy(parent),
-				targetIndex: id,
-			})
-		}
 		this._self.pointInputIdx = -1
 		
 		__Node__.setNodeCur()
 		__Node__.setNodeTar()
 	}
 	// 拖拽接触
-	PointDragEnter = (e, data) => {
-		__Node__.setNodeTar({ type: 'input', ...data })
-		// console.log('PointEnter', e.target.className)
-	}
+	// PointDragEnter = (e, data) => {
+	// 	__Node__.setNodeTar({ type: 'in', ...data })
+	// 	console.log('PointEnter', e.target.className)
+	// }
 	// 拖拽离开
-	PointDragLeave = e => {
-		__Node__.setNodeTar()
-		// console.log('PointLeave', e.target.className)
-	}
+	// PointDragLeave = e => {
+	// 	__Node__.setNodeTar()
+	// 	console.log('PointLeave', e.target.className)
+	// }
 }
 

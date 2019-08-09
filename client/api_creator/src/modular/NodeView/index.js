@@ -72,10 +72,13 @@ export default class NodeView extends React.Component {
 
 	viewZoom = num => {
 		var { scale } = this.state,
-			size = (scale <= 0.9 || (scale === 1 && num < 0))? 0.1: 0.2
-		if ((scale === 2 && num > 0) || (scale === 0.2 && num < 0)) return
+			max = 10,
+			stepS = 0.1,
+			stepB = 0.2,
+			size = (scale <= 0.9 || (scale === 1 && num < 0))? stepS: stepB
+		if ((scale === max && num > 0) || (scale === stepB && num < 0)) return
 		scale += num * size
-		scale = +(scale < 0.2? 0.2: scale > 2? 2: scale).toFixed(2)
+		scale = +(scale < stepB? stepB: scale > max? max: scale).toFixed(2)
 
 		this.setState({ scale }, this.ergodicNodes)
 	}
