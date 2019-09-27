@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --config ./build/webpack.dev.js",
-    "dev": "webpack-dev-server --config ./build/webpack.dev.js",
-    "build": "webpack --config  ./build/webpack.prod.js "
+    "dev":   "webpack-dev-server --config ./build/webpack.dev.js",
+    "build": "webpack --config  ./build/webpack.prod.js",
+    "dev-main": "electron ./src/main.dev.js"
   },
   "author": "zhuangjiaqi",
   "license": "ISC",
@@ -20,6 +21,8 @@
     "babel-loader": "^8.0.6",
     "copy-webpack-plugin": "^5.0.3",
     "css-loader": "^3.0.0",
+    "electron": "^6.0.10",
+    "electron-builder": "^21.2.0",
     "file-loader": "^4.0.0",
     "html-webpack-plugin": "^3.2.0",
     "less": "^3.9.0",

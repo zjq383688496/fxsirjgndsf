@@ -39,7 +39,6 @@ export class Point {
 			{ bind } = input[pointInputIdx],
 			NodeTar = __Node__.getNodeTar(),
 			is
-		debugger
 		switch (type) {
 			case 'out':
 				is = NodeTar && parent.id !== NodeTar.id

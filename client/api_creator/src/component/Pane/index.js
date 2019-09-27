@@ -45,7 +45,7 @@ export default class Pane extends React.Component {
 	render() {
 		var { components, data, idx, parent = {} } = this.props
 		var { max } = this.state
-		var { layout = 0, panes = [] } = parent
+		var { layout = 0, panes = [], type } = parent
 		var menuBtn = (<div className="wp-menu-btn ic-menu" onClick={this.contextmenu}></div>)
 		return (
 			<div className={`wrap-pane${max? ' wp-max': ''}`} ref="paneEle" onContextMenu={this.contextmenu}>
@@ -56,7 +56,7 @@ export default class Pane extends React.Component {
 				{
 					idx
 					?
-					<Dragline type={parent.type} data={data} />
+					<Dragline type={type} data={data} prevData={panes[idx - 1]} />
 					: null
 				}
 			</div>
