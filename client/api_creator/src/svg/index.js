@@ -40,7 +40,7 @@ export default class SvgNode extends React.Component {
 			{ data } = state,
 			newData  = deepCopy(props.data)
 		if (!objEqual(data, newData)) {
-			console.log('1. update')
+			// console.log('1. update')
 			this.setState({ data: newData }, () => {
 				var { lines, sourceMap } = props,
 					source = sourceMap[data.id]
@@ -60,7 +60,7 @@ export default class SvgNode extends React.Component {
 				}
 			})
 		} else {
-			console.log('1. not update')
+			// console.log('1. not update')
 		}
 	}
 
@@ -97,7 +97,7 @@ export default class SvgNode extends React.Component {
 	}
 
 	// 创建输入线段拖拽物
-	inputLinesDrag = () => {
+	inputLinesDrag = key => {
 		var { lineInput, props } = this,
 			{ data, scale } = props,
 			{ input } = data
@@ -106,8 +106,8 @@ export default class SvgNode extends React.Component {
 			var ipt = input[i],
 				{ bind } = ipt
 			
-			var inputPoint  = <DragPoint key={0} type="out" idx={i} data={data} scale={scale} line={_} lineInput={lineInput} />,
-				outputPoint = <DragPoint key={1} type="in"  idx={i} data={data} scale={scale} line={_} lineInput={lineInput} />,
+			var inputPoint  = <DragPoint key={`${key}_0`} type="out" idx={i} data={data} scale={scale} line={_} lineInput={lineInput} />,
+				outputPoint = <DragPoint key={`${key}_1`} type="in"  idx={i} data={data} scale={scale} line={_} lineInput={lineInput} />,
 				points = [inputPoint]
 
 			if (bind != null) points.push(outputPoint)
@@ -139,13 +139,15 @@ export default class SvgNode extends React.Component {
 			endCb  = Node.NodeEnd,
 			Shape  = Shapes[type]
 
+
 		if (!Shape) return null
 
-		var inputsDrag = this.inputLinesDrag()
+		var key = `${id}_0`
+		var inputsDrag = this.inputLinesDrag(key)
 
 		return ([
 			<div
-				key={`${id}_0`}
+				key={key}
 				className={`node-child`}
 				style={style}
 				draggable="true"

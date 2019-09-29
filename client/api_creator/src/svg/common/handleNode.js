@@ -54,7 +54,6 @@ export class Node {
 			if (abs(dx) < 10) { targetLay.cx = startX; ox = dx }
 			if (abs(dy) < 10) { targetLay.cy = startY; oy = dy }
 
-
 			point = __Node__.getPoint(startPos, targetLay)
 
 			_.init(startX, startY, point.x, point.y, '#fff')
@@ -64,13 +63,6 @@ export class Node {
 			for (var _id in output) {
 				var line = lines[_id][output[_id]],
 					lay  = line.data.layout
-				
-				// 输出坐标吸附 (bug)
-				// dx = dx? tx - lay.cx: dx
-				// dy = dy? ty - lay.cy: dy
-
-				// if (abs(dx) < 10) { tx = lay.cx; ox = dx }
-				// if (abs(dy) < 10) { ty = lay.cy; oy = dy }
 
 				line.init(tx, ty, null, null)
 			}
@@ -92,8 +84,6 @@ export class Node {
 
 		x -= ox
 		y -= oy
-
-		console.log(ox, oy)
 
 		$(node).show().removeClass('s-active')
 		

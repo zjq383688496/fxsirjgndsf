@@ -65,6 +65,7 @@ export default function business(state = initialState, action) {
 			}
 
 		case types.NODE_CONTENT:
+			if (!node_connect) return state
 			var { source, target, targetIndex, unbind, unbindIndex } = node_connect,
 				targetInput = target.input[targetIndex]
 			target.input[targetIndex].bind = { id: source.id, index: 0 }
