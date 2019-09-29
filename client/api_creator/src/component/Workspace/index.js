@@ -3,14 +3,18 @@ import Pane from '@comp/Pane'
 import Dragline from '@comp/Dragline'
 import './index.less'
 
+var styleMap = {
+	horizontal: 'width',
+	vertical:   'height',
+}
+
 export default class Work extends React.Component {
 	constructor(props) {
 		super(props)
 	}
 	createStyle = (type, value) => {
 		var style = { flex: 'initial' }
-		if (type === 'horizontal') style.width = `${value}vw`
-		else style.height = `${value}vh`
+		style[styleMap[type]] = `${value}%`
 		return style
 	}
 	createSpace = (data, parent, idx) => {
@@ -23,29 +27,29 @@ export default class Work extends React.Component {
 			components,
 			parent
 		}
+		var _id = `ws_${layout}_${idx}`
 		return (
-			<div key={idx} layout={layout} className={`ws-block${type? ` ws-${type}`: ''}`} style={style}>
-				<Pane {...props} />
+			<div key={idx} layout={layout} id={_id} className={`ws-block${type? ` ws-${type}`: ''}`} style={style}>
+				<Pane {...props} _id={_id}  />
 			</div>
 		)
 	}
 	resolve = (space, parent) => {
-		if (!space) {
-			return this.createSpace(parent, undefined, 0)
-		}
+		if (!space) return this.createSpace(parent, undefined, 0)
 		var panesDom = space.map((_, idx) => {
 			var { type, components, layout, value, panes } = _
 			var style = {}
 			if (panes && panes.length) {
 				if (idx) style = this.createStyle(parent.type, value)
+				var _id = `ws_${layout}_${idx}`
 				return (
-					<div key={idx} layout={layout} className={`ws-block`} style={style}>
+					<div key={idx} layout={layout} id={_id} className={`ws-block`} style={style}>
 						<div className={`wrap-pane${type? ` ws-${type}`: ''}`}>
 							{this.resolve(panes, _)}
 							{
 								idx
 								?
-								<Dragline type={parent.type} data={_} />
+								<Dragline type={parent.type} _id={_id} data={_} prevData={space[idx - 1]} />
 								: null
 							}
 						</div>

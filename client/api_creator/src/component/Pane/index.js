@@ -18,22 +18,14 @@ export default class Pane extends React.Component {
 		if (layout === 0 && panes.length < 2) return
 		var adja
 		if (panes.length > 1) {
-			if (idx) {
-				adja = parent.panes[idx - 1]
-			} else {
-				adja = parent.panes[idx + 1]
-			}
+			var val = idx? -1: 1
+			adja = parent.panes[idx + val]
 			adja.value += data.value
 			parent.panes.splice(idx, 1)
 		} else {
 			Object.keys(parent).map(_ => delete parent[_])
 		}
 		actions.updateWorkspace(Workspace)
-	}
-	getValue = type => {
-		var { paneEle } = this.refs
-		var val = paneEle[`offset${type}`] / document.body[`client${type}`] * 100
-		return val
 	}
 	contextmenu = e => {
 		e.preventDefault()
@@ -43,7 +35,7 @@ export default class Pane extends React.Component {
 		actions.contextMenuState({ type: 'pane', state: true, pageX, pageY }, data, this)
 	}
 	render() {
-		var { components, data, idx, parent = {} } = this.props
+		var { _id, components, data, idx, parent = {} } = this.props
 		var { max } = this.state
 		var { layout = 0, panes = [], type } = parent
 		var menuBtn = (<div className="wp-menu-btn ic-menu" onClick={this.contextmenu}></div>)
@@ -56,7 +48,7 @@ export default class Pane extends React.Component {
 				{
 					idx
 					?
-					<Dragline type={type} data={data} prevData={panes[idx - 1]} />
+					<Dragline type={type} _id={_id} data={data} prevData={panes[idx - 1]} />
 					: null
 				}
 			</div>

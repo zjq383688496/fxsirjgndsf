@@ -41,12 +41,13 @@ module.exports = {
 }
 
 // 面板分割
-function split(type) {
+function split(nowType) {
 	var { components, data, parent = {}, idx } = this.props,
 		{ actions, Config } = __Redux__,
-		{ layout = 0, panes = [] } = parent,
-		val = this.getValue(type === 'horizontal'? 'Width': 'Height') / 2
-	if (parent.type === type) {
+		{ layout = 0, panes = [], type } = parent,
+		val = (nowType === type? data.value: 100) / 2
+
+	if (type === nowType) {
 		data.value = val
 		parent.panes.splice(idx + 1, 0, {
 			value: val,
@@ -57,7 +58,7 @@ function split(type) {
 	} else {
 		if (!data.panes) data.panes = []
 		var lay = data.layout + 1
-		data.type = type
+		data.type = nowType
 		data.panes.push(
 			{ value: val, tabs: true, components, layout: lay },
 			{ value: val, tabs: true, components: [], layout: lay }
