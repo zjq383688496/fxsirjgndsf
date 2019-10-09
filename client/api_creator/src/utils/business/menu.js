@@ -14,12 +14,13 @@ module.exports = {
 			if (layout === 0 && panes.length < 2) return
 			var adja
 			if (panes.length > 1) {
-				if (idx) {
-					adja = parent.panes[idx - 1]
-				} else {
-					adja = parent.panes[idx + 1]
-				}
-				adja.value += data.value
+				var _idx = idx + (idx? -1: 1)
+				var val = 0
+				adja = parent.panes[_idx]
+				panes.forEach(({ value }, i) => {
+					if (idx != i && _idx != i) val += value
+				})
+				adja.value = (100 - val)
 				parent.panes.splice(idx, 1)
 			} else {
 				Object.keys(parent).map(_ => delete parent[_])

@@ -4,6 +4,7 @@ import state from '@state'
 import { nodes } from '@var'
 
 var initialState = getSave() || state
+var { max, round } = Math
 
 export default function business(state = initialState, action) {
 	let {
@@ -119,6 +120,17 @@ var WS = {
 				}
 			}
 		})
+		if (space.length) {
+			var vals = space.map(({ value }) => value),
+				sum  = round(vals.reduce((pre, cur) => pre + cur))
+			if (sum != 100) {
+				var mx  = max(...vals),
+					idx = vals.reduce((p, c, i) => c == mx? i: -1),
+					dif = sum - 100,
+					newVal = mx - dif
+				space[idx].value = newVal
+			}
+		}
 		if (space.length === 1 && parent.layout === 0) {
 			var sp = space[0]
 			var { components, tabs, type, value = 100 } = sp,
