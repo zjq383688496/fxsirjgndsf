@@ -1,3 +1,5 @@
+var { random, round } = Math
+
 /* window 扩展方法 */
 module.exports = Object.assign(window, {
 	// 获取真实数据类型
@@ -35,7 +37,15 @@ module.exports = Object.assign(window, {
 		}
 	},
 	randomColor() {
-		return ('000000' + (~~((1 << 24) * Math.random())).toString(16)).substr(-6)
+		return ('000000' + (~~((1 << 24) * random())).toString(16)).substr(-6)
+	},
+	randomRange(num1 = 0, num2 = 100, digit = 3) {
+		return round((num2 - num1) * random() + num1)
+	},
+	pad(num, digit = 3, space = '0') {
+		var str    = new Array(digit).join(space) + space
+		var numStr = `${str}${num}`.substr(-digit)
+		return numStr
 	},
 	// 节流
 	_throttle(action, delay = 160) {

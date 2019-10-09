@@ -27,7 +27,7 @@ export default class Work extends React.Component {
 			components,
 			parent
 		}
-		var _id = `ws_${layout}_${idx}`
+		var _id = cId(layout, idx)
 		return (
 			<div key={idx} layout={layout} id={_id} className={`ws-block${type? ` ws-${type}`: ''}`} style={style}>
 				<Pane {...props} _id={_id}  />
@@ -41,7 +41,7 @@ export default class Work extends React.Component {
 			var style = {}
 			if (panes && panes.length) {
 				if (idx) style = this.createStyle(parent.type, value)
-				var _id = `ws_${layout}_${idx}`
+				var _id = cId(layout, idx)
 				return (
 					<div key={idx} layout={layout} id={_id} className={`ws-block`} style={style}>
 						<div className={`wrap-pane${type? ` ws-${type}`: ''}`}>
@@ -72,4 +72,10 @@ export default class Work extends React.Component {
 			</div>
 		)
 	}
+}
+
+function cId(layout, idx) {
+	var ran = randomRange(1000, 99999),
+		num = pad(ran, 6)
+	return `ws_${layout}_${idx}__${num}`
 }
