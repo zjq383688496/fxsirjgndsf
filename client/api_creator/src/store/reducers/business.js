@@ -23,7 +23,6 @@ export default function business(state = initialState, action) {
 		NodeInfo,
 	} = state
 	switch (action.type) {
-		// 组件操作
 		case types.UPDATE_WORKSPACE:
 			WS.parse(work_space.panes, work_space)
 			return ReduxUpdate(Object.assign({}, state, {
@@ -39,6 +38,8 @@ export default function business(state = initialState, action) {
 
 		case types.ADD_NODE:
 			++NodeInfo.Max
+			var node = nodes[node_key]
+			if (!node) return ReduxUpdate(Object.assign({}, state))
 			var { Max } = NodeInfo,
 				node = Object.assign(deepCopy(nodes[node_key]), { id: Max }),
 				{ layout } = node,

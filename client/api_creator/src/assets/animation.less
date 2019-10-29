@@ -1,19 +1,15 @@
 .a-fadeIn(@duration: 0.3s, @count: 1, @delay: 0s) when(@count < 1) {
-	-webkit-animation: fadeIn @duration @delay infinite;
-			animation: fadeIn @duration @delay infinite;
+	animation: fadeIn @duration @delay infinite;
 }
 .a-fadeIn(@duration: 0.3s, @count: 1, @delay: 0s) when(@count > 0) {
-	-webkit-animation: fadeIn @duration @delay @count;
-			animation: fadeIn @duration @delay @count;
+	animation: fadeIn @duration @delay @count;
 }
 
 .a-fadeOut(@duration: 0.3s, @count: 1, @delay: 0s) when(@count < 1) {
-	-webkit-animation: fadeOut @duration @delay infinite;
-			animation: fadeOut @duration @delay infinite;
+	animation: fadeOut @duration @delay infinite;
 }
 .a-fadeOut(@duration: 0.3s, @count: 1, @delay: 0s) when(@count > 0) {
-	-webkit-animation: fadeOut @duration @delay @count;
-			animation: fadeOut @duration @delay @count;
+	animation: fadeOut @duration @delay @count;
 }
 
 @keyframes fadeIn {
