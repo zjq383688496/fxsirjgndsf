@@ -139,8 +139,8 @@
     circle: ['x', 'y', 'r',
     /*'sAngle', 'eAngle',*/
     'opacity', 'fill', 'stroke', 'strokeWidth'],
-    ellipse: ['x', 'y', 'rx', 'ry', 'rotate',
-    /*'sAngle', 'eAngle',*/
+    ellipse: ['x', 'y', 'rx', 'ry',
+    /*'rotate', 'sAngle', 'eAngle',*/
     'opacity', 'fill', 'stroke', 'strokeWidth'],
     polygon: ['points', 'opacity', 'fill', 'stroke', 'strokeWidth']
   };
@@ -416,7 +416,7 @@
       if (opacity < 1) ctx.globalAlpha = opacity;
       ctx.beginPath(); // 绘制椭圆
 
-      ctx.ellipseNew(x, y, rx, ry, rotate, sAngle / 180 * PI$1, eAngle / 180 * PI$1); // 填充颜色
+      ctx.ellipse(x, y, rx, ry, 0, 0, 2 * PI$1); // 填充颜色
 
       ctx.fillStyle = fill;
       ctx.fill(); // 描边
@@ -454,8 +454,8 @@
 
   (function () {
     // 创建椭圆
-    if (CanvasRenderingContext2D.prototype.ellipseNew === undefined) {
-      CanvasRenderingContext2D.prototype.ellipseNew = function (x, y, radiusX, radiusY, rotation, startAngle, endAngle, antiClockwise) {
+    if (CanvasRenderingContext2D.prototype.ellipse === undefined) {
+      CanvasRenderingContext2D.prototype.ellipse = function (x, y, radiusX, radiusY, rotation, startAngle, endAngle, antiClockwise) {
         this.save();
         this.translate(x, y);
         this.rotate(rotation);

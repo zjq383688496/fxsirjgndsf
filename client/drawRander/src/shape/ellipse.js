@@ -27,7 +27,7 @@ export default class ellipse {
 		ctx.beginPath()
 
 		// 绘制椭圆
-		ctx.ellipseNew(x, y, rx, ry, rotate, sAngle / 180 * PI, eAngle / 180 * PI)
+		ctx.ellipse(x, y, rx, ry, 0, 0, 2 * PI)
 
 		// 填充颜色
 		ctx.fillStyle = fill

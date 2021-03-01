@@ -45,7 +45,7 @@ const getDefaultValue = {
 const keysMap = {
 	rect:    ['x', 'y', 'width', 'height', 'opacity', 'fill', 'stroke', 'strokeWidth'],
 	circle:  ['x', 'y', 'r', /*'sAngle', 'eAngle',*/ 'opacity', 'fill', 'stroke', 'strokeWidth'],
-	ellipse: ['x', 'y', 'rx', 'ry', 'rotate', /*'sAngle', 'eAngle',*/ 'opacity', 'fill', 'stroke', 'strokeWidth'],
+	ellipse: ['x', 'y', 'rx', 'ry', /*'rotate', 'sAngle', 'eAngle',*/ 'opacity', 'fill', 'stroke', 'strokeWidth'],
 	polygon: ['points', 'opacity', 'fill', 'stroke', 'strokeWidth'],
 }
 
