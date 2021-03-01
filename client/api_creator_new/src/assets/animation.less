@@ -1,0 +1,22 @@
+.a-fadeIn(@duration: 0.3s, @count: 1, @delay: 0s) when(@count < 1) {
+	animation: fadeIn @duration @delay infinite;
+}
+.a-fadeIn(@duration: 0.3s, @count: 1, @delay: 0s) when(@count > 0) {
+	animation: fadeIn @duration @delay @count;
+}
+
+.a-fadeOut(@duration: 0.3s, @count: 1, @delay: 0s) when(@count < 1) {
+	animation: fadeOut @duration @delay infinite;
+}
+.a-fadeOut(@duration: 0.3s, @count: 1, @delay: 0s) when(@count > 0) {
+	animation: fadeOut @duration @delay @count;
+}
+
+@keyframes fadeIn {
+	0%   { opacity: 0 }
+	100% { opacity: 1 }
+}
+@keyframes fadeOut {
+	0%   { opacity: 1 }
+	100% { opacity: 0 }
+}

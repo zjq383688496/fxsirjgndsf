@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>drawRender</title>
+<style>
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+.top {
+	width: 200px;
+	height: 200px;
+}
+#container {
+	width: 100vw;
+	height: 100vh;
+}
+#canvas {
+}
+</style>
+</head>
+<body>
+<!-- 图的画布容器 -->
+<div id="container">
+	<canvas id="canvas" width="900" height="500"></canvas>
+</div>
+<script>
+let container = document.querySelector('#container')
+let canvas    = document.querySelector('#canvas')
+let ctx       = canvas.getContext('2d')
+
+let p0 = { x: 40,  y: 40 }
+let p1 = { x: 40,  y: 440 }
+let p2 = { x: 880, y: 440 }
+let p3 = { x: 880, y: 40 }
+let P  = [ p0, p1, p2, p3 ]
+
+drawCircle(p0)
+drawCircle(p1)
+drawCircle(p2)
+drawCircle(p3)
+
+draw()
+container.addEventListener('click', handleClick, false)
+
+function handleClick(e) {
+	let { offsetX, offsetY } = e
+	let line = createLine(P, offsetY)
+	update(line)
+	console.log(offsetX, offsetY)
+}
+
+function draw() {
+	let init = 0
+
+	ctx.beginPath()
+
+	while (init <= 1) {
+		let point   = bezier(init),
+			{ x, y }  = point
+
+		if (!init) ctx.moveTo(x, y)
+		else ctx.lineTo(x, y)
+
+		init = +(init + .01).toFixed(2)
+		// console.log(point)
+	}
+
+	ctx.strokeStyle = '#000'
+	ctx.lineWidth   = 2
+	ctx.stroke()
+
+	ctx.closePath()
+}
+
+function drawCircle(point, fill = 'red') {
+	let { x, y } = point
+	ctx.beginPath()
+	ctx.arc(x, y, 6, 0, 2 * Math.PI)
+
+	// 填充颜色
+	ctx.fillStyle = fill
+	ctx.fill()
+	ctx.closePath()
+}
+
+function bezier(t) {
+	let temp  = 1 - t
+	let temp2 = temp ** 2
+	let temp3 = temp ** 3
+	let t2    = t ** 2
+	let t3    = t ** 3
+	let x = p0.x * temp3 + 3 * p1.x * t * temp2 + 3 * p2.x * t2 * temp + p3.x * t3
+	let y = p0.y * temp3 + 3 * p1.y * t * temp2 + 3 * p2.y * t2 * temp + p3.y * t3
+	return { t, x, y }
+}
+
+// 创建线
+function createLine(P, y) {
+	let x = [], max, min
+	let _y = y + 0
+	P.forEach(p => x.push(p.x))
+	max = Math.max(...x)
+	min = Math.min(...x)
+	ctx.beginPath()
+	ctx.moveTo(min, y)
+	ctx.lineTo(max, _y)
+	ctx.strokeStyle = '#000'
+	ctx.lineWidth   = 1
+	ctx.stroke()
+	ctx.closePath()
+
+	return [ { x: min, y }, { x: max, y: _y } ]
+}
+
+function update(L) {
+	// 获取xy轴数据队列
+	let px = P.map(p => p.x)	// 控制点x轴队列
+	let py = P.map(p => p.y)	// 控制点y轴队列
+	let lx = L.map(p => p.x)	// 线段端点x轴队列
+	let ly = L.map(p => p.y)	// 线段端点y轴队列
+	
+	computeIntersections(px, py, lx, ly) 
+}
+
+// 计算交点
+function computeIntersections(px, py, lx, ly) {
+	var X = Array()
+	
+	var A = ly[1] - ly[0]		// A = y2 - y1
+	var B = lx[0] - lx[1]		// B = x1 - x2
+	var C = lx[0] * (ly[0] - ly[1]) +
+			ly[0] * (lx[1] - lx[0])	// C = x1*(y1-y2)+y1*(x2-x1)
+
+	var bx = bezierCoeffs(...px)
+	var by = bezierCoeffs(...py)
+	
+	var P = Array()
+	P[0] = A * bx[0] + B * by[0]		/*t^3*/
+	P[1] = A * bx[1] + B * by[1]		/*t^2*/
+	P[2] = A * bx[2] + B * by[2]		/*t*/
+	P[3] = A * bx[3] + B * by[3] + C	/*1*/
+
+	var r = cubicRoots(P)
+
+	
+	// 验证 路径 是否在线段的边界内
+
+	for (let i = 0; i < 3; i++) {
+		let X = []
+		let t = r[i]
+		
+		X[0] = bx[0] * t * t * t + bx[1] * t * t + bx[2] * t + bx[3]
+		X[1] = by[0] * t * t * t + by[1] * t * t + by[2] * t + by[3]
+			
+		// 上面是假设无限长线段的交点, 确保我们也在这条线的边界内
+		var s
+		// 如果不是垂线
+		if ((lx[1] - lx[0]) != 0) s = (X[0] - lx[0]) / (lx[1] - lx[0])
+		else                      s = (X[1] - ly[0]) / (ly[1] - ly[0])
+		
+		// 在边界内?
+		if (t < 0 || t > 1 || s < 0 || s > 1) {
+			X[0] =- 100		// 离开屏幕
+			X[1] =- 100
+		} else {
+			drawCircle({ x: X[0], y: X[1] })
+		}
+		
+		// console.log(X)
+	}
+}
+
+// bezier系数
+function bezierCoeffs(P0, P1, P2, P3) {
+	let Z = [
+		-P0 + 3 * P1 + -3 * P2 + P3,
+		3 * P0 - 6 * P1 + 3 * P2,
+		-3 * P0 + 3 * P1,
+		P0
+	]
+	return Z
+}
+
+// 获取 路径 位置
+function cubicRoots(P) {
+	var [ a, b, c, d ] = P
+	var t = Array()
+	if (a === 0) {
+		// 检测到线性公式
+		if (b === 0) {
+
+			t[0] = -1 * (P[3] / P[2])
+			t[1] = -1
+			t[2] = -1
+
+			// 丢弃不合规格的 路径
+			for (var i = 0; i < 1; i++) {
+				if (t[i] < 0 || t[i] > 1) t[i] =- 1
+			}
+
+			// 排序, 但在末尾放置-1
+			t = sortSpecial(t)
+
+			console.log(t[0])
+			return t
+		}
+
+		// 检测到二次公式
+		var DQ = Math.pow(P[2], 2) - 4 * P[1] * P[3]
+		if (DQ >= 0) {
+			DQ = Math.sqrt(DQ)
+
+			t[0] = -1 * ( ( DQ + P[2] ) / ( 2 * P[1] ) )
+			t[1] = ( ( DQ - P[2] ) / ( 2 * P[1] ) )
+			t[2] = -1
+
+			// 丢弃不合规格的根
+			for (var i = 0; i < 2; i++) {
+				if (t[i] < 0 || t[i] > 1) t[i] =- 1
+			}
+
+			// 排序, 但在末尾放置-1
+			t = sortSpecial(t)
+
+			console.log(t[0] + ' ' + t[1])
+			return t
+		}
+	}
+	
+	var A = b / a
+	var B = c / a
+	var C = d / a
+
+	var Q, R, D, S, T, Im
+
+	var Q = (3 * B - Math.pow(A, 2)) / 9
+	var R = (9 * A * B - 27 * C - 2 * Math.pow(A, 3)) / 54
+	var D = Q ** 3 + R ** 2    // 多项式判别式
+
+	if (isNaN(D)) {
+		for (var i = 0; i < 3; i++) {
+			t[i] = -1
+		}
+		return t
+	}
+	// complex or duplicate roots
+	if (D >= 0) {
+		var S = sgn(R + Math.sqrt(D)) * Math.pow(Math.abs(R + Math.sqrt(D)), (1 / 3))
+		var T = sgn(R - Math.sqrt(D)) * Math.pow(Math.abs(R - Math.sqrt(D)), (1 / 3))
+
+		t[0] = -A / 3 + (S + T)                      // real root
+		t[1] = -A / 3 - (S + T) / 2                  // real part of complex root
+		t[2] = -A / 3 - (S + T) / 2                  // real part of complex root
+		Im = Math.abs(Math.sqrt(3) * (S - T) / 2)    // complex part of root pair   
+		
+		/*discard complex roots*/
+		if (Im != 0) {
+			t[1] =- 1
+			t[2] =- 1
+		}
+	}
+	// distinct real roots
+	else {
+		var th = Math.acos(R/Math.sqrt(-Math.pow(Q, 3)))
+		
+		t[0] = 2 * Math.sqrt(-Q) * Math.cos(th/3) - A/3
+		t[1] = 2 * Math.sqrt(-Q) * Math.cos((th + 2 * Math.PI)/3) - A/3
+		t[2] = 2 * Math.sqrt(-Q) * Math.cos((th + 4 * Math.PI)/3) - A/3
+		Im = 0.0
+	}
+	
+	/*discard out of spec roots*/
+	for (var i = 0; i < 3; i++) {
+		if (t[i] < 0 || t[i] > 1) t[i] =- 1
+	}
+				
+	/*sort but place -1 at the end*/
+	t = sortSpecial(t)
+	
+	console.log(t[0] + ' ' + t[1] + ' ' + t[2])
+	return t
+}
+
+function sortSpecial(a) {
+	var flip
+	var temp
+	
+	do {
+		flip = false
+		for (var i=0;i<a.length-1;i++) {
+			if ((a[i + 1] >= 0 && a[i] > a[i + 1]) || (a[i] < 0 && a[i + 1] >= 0)) {
+				flip = true
+				temp = a[i]
+				a[i] = a[i + 1]
+				a[i + 1] = temp
+			}
+		}
+	} while (flip)
+	return a
+}
+
+// sign of number
+function sgn(x) {
+	if (x < 0.0) return -1
+	return 1
+}
+
+function checkInfinity(val) {
+	if (val === Infinity || val === -Infinity) return 0
+	return val
+}
+</script>
+</body>
+</html>

@@ -81,6 +81,12 @@ export default class NodeView extends React.Component {
 		scale = +(scale < stepB? stepB: scale > max? max: scale).toFixed(2)
 
 		this.setState({ scale }, this.ergodicNodes)
+		this.renderZoomMessage(scale)
+	}
+
+	renderZoomMessage = scale => {
+		var { _ZOOM_ } = this.refs
+		_ZOOM_.className = ''
 	}
 
 	scrollFunc = _throttle(e => {
@@ -90,7 +96,6 @@ export default class NodeView extends React.Component {
 
 	render() {
 		var { scale } = this.state,
-			// style = { transform: `scale(${scale})` }
 			style = { zoom: scale }
 		return (
 			<div className="mv-node-view" onWheel={this.scrollFunc} ref="_VIEW_">
@@ -99,6 +104,7 @@ export default class NodeView extends React.Component {
 						{this.Nodes}
 					</div>
 				</div>
+				<div className="mv-node-message" ref="_ZOOM_"></div>
 			</div>
 		)
 	}

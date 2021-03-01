@@ -1,0 +1,68 @@
+@import '../../assets/var.less';
+.wh(@w: 32, @h: @w) {
+	width: ~"@{w}px";
+	height: ~"@{h}px";
+}
+._wh(@w: 32, @h: @w) {
+	width: @w;
+	height: @h;
+}
+
+.mv-tools-view {
+	min-width:  36px;
+	min-height: 36px;
+	padding: 2px;
+	.mv-tools {
+		font-size: 12px;
+		position: relative;
+		&.s-active {
+			z-index: 1;
+			.mv-tools-dt,
+			.mv-tools-dd {
+				display: flex;
+				border: 1px solid rgba(28, 28, 28, 1);
+				background-color: rgba(71, 71, 71, 1);
+			}
+		}
+	}
+	.mv-tools-dt {
+		display: flex;
+		.wh(32);
+		justify-content: center;
+		align-items: center;
+		border-radius: 3px;
+		&:hover {
+			border: 1px solid rgba(28, 28, 28, 1);
+			box-shadow: 0 0 0 1px rgba(71, 71, 71, 1) inset;
+		}
+	}
+	.mv-tools-dd {
+		position: absolute;
+		top: 0;
+		left: 31px;
+		display: none;
+		width: 150px;
+		flex-direction: column;
+		a {
+			display: flex;
+			._wh(100%, 28px);
+			padding: 2px 4px;
+			justify-content: flex-start;
+			align-items: center;
+			&:hover {
+				background-color: @main;
+				color: @deep-dark;
+			}
+		}
+	}
+	a {
+		display: block;
+	}
+	.mv-tools-mask {
+		position: fixed;
+		top:  0;
+		left: 0;
+		width:  100vw;
+		height: 100vh;
+	}
+}
