@@ -1,6 +1,6 @@
 import { filter } from './filter'
 
-export default class rect {
+export default class polygon {
 	constructor(cfg = {}, parent) {
 		this.cfg    = cfg
 		this.parent = parent
@@ -19,13 +19,16 @@ export default class rect {
 		let { ctx } = this.parent
 		let { points, opacity, fill, stroke, strokeWidth } = cfg.attrs
 		
+		if (points.length < 2) return console.log('polygon 数据为空!')
+
 		// 设置画板透明度
 		if (opacity < 1) ctx.globalAlpha = opacity
 
 		ctx.beginPath()
 
 		// 绘制矩形
-		let [ x, y ] = points[0]
+		let [ x, y ] = points[0],
+			[ ex, ey ] = points[-1]
 		ctx.moveTo(x, y)
 		points.forEach((point, i) => {
 			if (!i) return
@@ -33,7 +36,7 @@ export default class rect {
 			ctx.lineTo(x, y)
 		})
 
-		ctx.lineTo(x, y)	// 线闭合
+		if (ex != x || ey != y) ctx.lineTo(x, y)	// 线闭合
 
 		// 填充颜色
 		if (fill) {

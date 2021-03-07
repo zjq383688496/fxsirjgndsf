@@ -91,8 +91,32 @@
       default: (val = 360) => val < 0 ? 0 : val > 360 ? 360 : val
     },
     // 结束角
-    // 路径
+    // 路径 (polygon)
     points: {
+      type: Array,
+      default: (val = []) => {
+        let len = val.length;
+        if (!len) return [];
+        if (len % 3 != 1) return [];
+        let error = 0;
+        val.forEach(vs => {
+          if (error) return;
+          let t = getClass(vs);
+          if (t != 'Array') return error = 1;
+          if (vs.length != 2) return error = 1;
+          vs.forEach(num => {
+            if (error) return;
+            let nt = getClass(num);
+            if (nt != 'Number') return error = 1;
+          });
+        });
+        if (error || val.length < 2) return [];
+        val[-1] = val[val.length - 1];
+        return val;
+      }
+    },
+    // 路径 (bezier)
+    paths: {
       type: Array,
       default: (val = []) => {
         let error = 0;
@@ -107,7 +131,7 @@
             if (nt != 'Number') return error = 1;
           });
         });
-        if (error || val.length < 2) return [];
+        if (error || val.length < 4) return [];
         val[-1] = val[val.length - 1];
         return val;
       }
@@ -142,7 +166,8 @@
     ellipse: ['x', 'y', 'rx', 'ry',
     /*'rotate', 'sAngle', 'eAngle',*/
     'opacity', 'fill', 'stroke', 'strokeWidth'],
-    polygon: ['points', 'opacity', 'fill', 'stroke', 'strokeWidth']
+    polygon: ['points', 'opacity', 'fill', 'stroke', 'strokeWidth'],
+    bezier: ['paths', 'opacity', 'fill', 'stroke', 'strokeWidth']
   };
   const filter = (name, cfg) => {
     let attrs = cfg.attrs;
@@ -298,86 +323,6 @@
 
   }
 
-  class rect$1 {
-    constructor(cfg = {}, parent) {
-      this.cfg = cfg;
-      this.parent = parent;
-      this.group = [];
-      this.init(cfg);
-      this.draw(cfg, this.group);
-      if (cfg.name) this.name = cfg.name;
-    }
-
-    init(cfg) {
-      filter('polygon', cfg);
-    }
-
-    draw(cfg, group) {
-      let {
-        ctx
-      } = this.parent;
-      let {
-        points,
-        opacity,
-        fill,
-        stroke,
-        strokeWidth
-      } = cfg.attrs; // 设置画板透明度
-
-      if (opacity < 1) ctx.globalAlpha = opacity;
-      ctx.beginPath(); // 绘制矩形
-
-      let [x, y] = points[0];
-      ctx.moveTo(x, y);
-      points.forEach((point, i) => {
-        if (!i) return;
-        let [x, y] = point;
-        ctx.lineTo(x, y);
-      });
-      ctx.lineTo(x, y); // 线闭合
-      // 填充颜色
-
-      if (fill) {
-        ctx.fillStyle = fill;
-        ctx.fill();
-      } // 描边
-
-
-      if (stroke && strokeWidth > 0) {
-        ctx.strokeStyle = stroke;
-        ctx.lineWidth = strokeWidth;
-        ctx.stroke();
-      }
-
-      ctx.closePath();
-      ctx.globalAlpha = 1;
-    } // 根据坐标判断点是否在矩形内
-
-
-    pointIn(offsetX, offsetY) {
-      let {
-        points
-      } = this.cfg.attrs;
-      let isIn = false;
-      points.forEach(([x1, y1], i) => {
-        let [x2, y2] = points[i - 1],
-            dx = x2 - x1,
-            dy = y2 - y1; // 判断当前点的y轴是否在两点之间 不在则不相交
-
-        if (y1 > offsetY === y2 > offsetY) return;
-        let scale = (offsetY - y1) / dy; // y轴比率
-
-        let ox = x1 + dx * scale; // 交点x轴坐标
-        // 判断交点在当前点哪边 左边则不相交
-
-        if (ox > offsetX) return;
-        isIn = !isIn;
-      });
-      return isIn;
-    }
-
-  }
-
   const {
     PI: PI$1
   } = Math;
@@ -444,12 +389,171 @@
 
   }
 
+  class polygon {
+    constructor(cfg = {}, parent) {
+      this.cfg = cfg;
+      this.parent = parent;
+      this.group = [];
+      this.init(cfg);
+      this.draw(cfg, this.group);
+      if (cfg.name) this.name = cfg.name;
+    }
+
+    init(cfg) {
+      filter('polygon', cfg);
+    }
+
+    draw(cfg, group) {
+      let {
+        ctx
+      } = this.parent;
+      let {
+        points,
+        opacity,
+        fill,
+        stroke,
+        strokeWidth
+      } = cfg.attrs;
+      if (points.length < 2) return console.log('polygon 数据为空!'); // 设置画板透明度
+
+      if (opacity < 1) ctx.globalAlpha = opacity;
+      ctx.beginPath(); // 绘制矩形
+
+      let [x, y] = points[0],
+          [ex, ey] = points[-1];
+      ctx.moveTo(x, y);
+      points.forEach((point, i) => {
+        if (!i) return;
+        let [x, y] = point;
+        ctx.lineTo(x, y);
+      });
+      if (ex != x || ey != y) ctx.lineTo(x, y); // 线闭合
+      // 填充颜色
+
+      if (fill) {
+        ctx.fillStyle = fill;
+        ctx.fill();
+      } // 描边
+
+
+      if (stroke && strokeWidth > 0) {
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = strokeWidth;
+        ctx.stroke();
+      }
+
+      ctx.closePath();
+      ctx.globalAlpha = 1;
+    } // 根据坐标判断点是否在矩形内
+
+
+    pointIn(offsetX, offsetY) {
+      let {
+        points
+      } = this.cfg.attrs;
+      let isIn = false;
+      points.forEach(([x1, y1], i) => {
+        let [x2, y2] = points[i - 1],
+            dx = x2 - x1,
+            dy = y2 - y1; // 判断当前点的y轴是否在两点之间 不在则不相交
+
+        if (y1 > offsetY === y2 > offsetY) return;
+        let scale = (offsetY - y1) / dy; // y轴比率
+
+        let ox = x1 + dx * scale; // 交点x轴坐标
+        // 判断交点在当前点哪边 左边则不相交
+
+        if (ox > offsetX) return;
+        isIn = !isIn;
+      });
+      return isIn;
+    }
+
+  }
+
+  class bezier {
+    constructor(cfg = {}, parent) {
+      this.cfg = cfg;
+      this.parent = parent;
+      this.group = [];
+      this.init(cfg);
+      this.draw(cfg, this.group);
+      if (cfg.name) this.name = cfg.name;
+    }
+
+    init(cfg) {
+      filter('bezier', cfg);
+    }
+
+    draw(cfg, group) {
+      let {
+        ctx
+      } = this.parent;
+      let {
+        paths,
+        opacity,
+        fill,
+        stroke,
+        strokeWidth
+      } = cfg.attrs;
+      let len = paths.length;
+      if (len < 4) return console.log('bezier 数据为空!'); // 设置画板透明度
+
+      if (opacity < 1) ctx.globalAlpha = opacity;
+      ctx.beginPath(); // 绘制矩形
+
+      let [x, y] = paths[0];
+      ctx.moveTo(x, y);
+
+      for (let i = 1, j = i + 1, k = i + 2; i < len; i += 3, j += 3, k += 3) {
+        let cp1 = paths[i],
+            cp2 = paths[j],
+            end = paths[k];
+        ctx.bezierCurveTo(...cp1, ...cp2, ...end);
+      } // 填充颜色
+
+
+      if (fill) {
+        ctx.fillStyle = fill;
+        ctx.fill();
+      } // 描边
+
+
+      if (stroke && strokeWidth > 0) {
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = strokeWidth;
+        ctx.stroke();
+      }
+
+      ctx.closePath();
+      ctx.globalAlpha = 1;
+      paths.forEach(cp => {
+        ctx.beginPath();
+        ctx.arc(...cp, 2, 0, 2 * Math.PI);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+        ctx.closePath();
+      });
+    } // 根据坐标判断点是否在矩形内
+
+
+    pointIn(offsetX, offsetY) {
+      this.cfg.attrs;
+      let isIn = false; // paths.forEach(([ x1, y1 ], i) => {
+      // })
+
+      return isIn;
+    }
+
+  }
+
   var shapeRender = /*#__PURE__*/Object.freeze({
     __proto__: null,
     rect: rect,
     circle: circle,
-    polygon: rect$1,
-    ellipse: ellipse
+    ellipse: ellipse,
+    polygon: polygon,
+    bezier: bezier
   });
 
   (function () {
@@ -543,8 +647,8 @@
           offsetY
         } = e;
         getOffset(); // console.log(offset, offsetX, offsetY, inPath)
-        // console.log(offsetX, offsetY)
 
+        console.log(offsetX, offsetY);
         let curNode;
         nodes.forEach(node => {
           let isIn = node.pointIn(offsetX, offsetY);

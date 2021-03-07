@@ -65,7 +65,7 @@ class DRender {
 			let { offsetX, offsetY } = e
 			let offset  = getOffset(container)
 			// console.log(offset, offsetX, offsetY, inPath)
-			// console.log(offsetX, offsetY)
+			console.log(offsetX, offsetY)
 			let curNode
 			nodes.forEach(node => {
 				let isIn = node.pointIn(offsetX, offsetY)

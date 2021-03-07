@@ -13,10 +13,13 @@ const getDefaultValue = {
 	rotate:      { type: Number, default: (val = 0)   => val < 0? 0: val > 360? 360: val },			// 旋转角度
 	sAngle:      { type: Number, default: (val = 0)   => val < 0? 0: val > 360? 360: val },			// 起始角
 	eAngle:      { type: Number, default: (val = 360) => val < 0? 0: val > 360? 360: val },			// 结束角
-	// 路径
+	// 路径 (polygon)
 	points:      {
 		type: Array,
-		default: (val = [])  => {
+		default: (val = []) => {
+			let len = val.length
+			if (!len) return []
+			if (len % 3 != 1) return []
 			let error = 0
 			val.forEach(vs => {
 				if (error) return
@@ -35,6 +38,28 @@ const getDefaultValue = {
 			return val
 		}
 	},
+	// 路径 (bezier)
+	paths:       {
+		type: Array,
+		default: (val = []) => {
+			let error = 0
+			val.forEach(vs => {
+				if (error) return
+				let t = getClass(vs)
+				if (t != 'Array') return error = 1
+				if (vs.length != 2) return error = 1
+				let [ num1, num2 ] = vs
+				vs.forEach(num => {
+					if (error) return
+					let nt = getClass(num)
+					if (nt != 'Number') return error = 1
+				})
+			})
+			if (error || val.length < 4) return []
+			val[-1] = val[val.length - 1]
+			return val
+		}
+	},
 	opacity:     { type: Number, default: (val = 1) => val < 0? 0: val > 1? 1: val },				// 透明度
 	fill:        { type: String, default: (val) => val || 'black' },								// 填充色
 	stroke:      { type: String, default: (val) => val || 'rgba(0, 0, 0, 0)' },						// 描边色
@@ -47,6 +72,7 @@ const keysMap = {
 	circle:  ['x', 'y', 'r', /*'sAngle', 'eAngle',*/ 'opacity', 'fill', 'stroke', 'strokeWidth'],
 	ellipse: ['x', 'y', 'rx', 'ry', /*'rotate', 'sAngle', 'eAngle',*/ 'opacity', 'fill', 'stroke', 'strokeWidth'],
 	polygon: ['points', 'opacity', 'fill', 'stroke', 'strokeWidth'],
+	bezier:  ['paths', 'opacity', 'fill', 'stroke', 'strokeWidth']
 }
 
 export const filter = (name, cfg) => {

@@ -16,6 +16,9 @@
 	width: 100vw;
 	height: 100vh;
 }
+canvas {
+	background-color: #f8f8f8;
+}
 </style>
 </head>
 <body>
@@ -39,7 +42,7 @@ var rect1 = graph.addNode('rect', {
 		stroke: '#0f0',
 		strokeWidth: 2
 	},
-	name: 'rect1',
+	name: 'rect',
 })
 
 var polygon2 = graph.addNode('polygon', {
@@ -61,7 +64,7 @@ var polygon2 = graph.addNode('polygon', {
 		stroke: '#00f',
 		strokeWidth: 2
 	},
-	name: 'polygon2',
+	name: 'polygon',
 })
 
 var ellipse3 = graph.addNode('ellipse', {
@@ -75,7 +78,31 @@ var ellipse3 = graph.addNode('ellipse', {
 		stroke: '#f00',
 		strokeWidth: 2
 	},
-	name: 'ellipse3',
+	name: 'ellipse',
+})
+
+var bezier = graph.addNode('bezier', {
+	attrs: {
+		paths: [
+			[600, 100],
+
+			[600, 200],
+			[700, 200],
+			[700, 100],
+
+			[700, 0],
+			[800, 0],
+			[800, 200],
+
+			[621, 282],
+			[522, 194],
+			[600, 100],
+		],
+		fill:   'blue',
+		stroke: '#f00',
+		strokeWidth: 2
+	},
+	name: 'bezier',
 })
 
 </script>
