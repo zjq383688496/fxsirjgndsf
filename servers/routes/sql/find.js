@@ -1,9 +1,11 @@
 const router = require('koa-router')()
 
-function a(argument) {}
+function a(ctx, next) {
+    debugger
+}
 
 router.prefix('/find')
 
-router.get('/create', a)
+router.post('/create', a)
 
 module.exports = router

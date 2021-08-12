@@ -8,9 +8,10 @@ module.exports = app => {
 	app.use(async (ctx, next) => {
 		const start = Date.now()
 		ctx.set('Access-Control-Allow-Credentials', true)
-		ctx.set('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type')
+		ctx.set('Access-Control-Allow-Headers', '*')
+		// ctx.set('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, x-access-token')
 		ctx.set('Access-Control-Allow-Origin',  '*')
-		ctx.set('Access-Control-Allow-Methods', 'POST')
+		ctx.set('Access-Control-Allow-Methods', 'GET, POST')
 		ctx.set('Access-Control-Max-Age', 3600)
 		if (ctx.method === 'OPTIONS') return ctx.body = ''
 		ctx.cfg = config

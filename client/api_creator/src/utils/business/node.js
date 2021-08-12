@@ -67,6 +67,7 @@ module.exports = {
 
 	// 创建箭头
 	createArrow: function(draw) {
+		if (!draw.marker) return
 		this._arrow = draw.marker(24, 4, function(add) {
 			add.path('M 0,0 L 0,4 L 6,2 z').fill('#000000')
 		})

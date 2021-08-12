@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>drawBezier</title>
+<style>
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+.position {
+	position: fixed;
+	top: 10px;
+	right: 10px;
+	color: #fff;
+	background-color: rgba(0, 0, 0, .3);
+	padding: 4px 6px;
+}
+</style>
+</head>
+<body>
+<div id="app" @mousemove="getPos($event)">
+	<div class="position">
+		X: {{x}}<br>
+		Y: {{y}}
+	</div>
+	<svg viewBox="0 0 1920 1080"
+	>
+		<path :d="path" stroke="3" fill="none" style="stroke: rgb(99, 99, 99); stroke-width: 1"/>
+		<path :d="path2" stroke="3" fill="none" style="stroke: rgb(99, 99, 99); stroke-width: 1"/>
+		<line :x1="line.p1.x" :y1="line.p1.y" :x2="line.p2.x" :y2="line.p2.y" style="stroke: rgb(0, 0, 0); stroke-width: 1"/>
+		<rect v-if="bbox" :x="bbox.x.min" :y="bbox.y.min" :width="bbox.x.size" :height="bbox.y.size" style="fill: none; stroke: pink; stroke-width: 1;"/>
+		<circle v-for="(point, i) in points" :cx="point.x" :cy="point.y" r="5" fill="#f00"></circle>
+
+		<circle v-for="(point, i) in lineInter" :cx="point.x" :cy="point.y" r="5" fill="#00f"></circle>
+		<circle v-for="(point, i) in curveInter" :cx="point.x" :cy="point.y" r="5" fill="#0ff"></circle>
+
+	</svg>
+	{{curveInter}}
+</div>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.8/vue.min.js"></script>
+<script src="index2.js" type="module"></script>
+<script src="../dist/DBezier.js"></script>
+<!-- <script src="index.js" type="module"></script> -->
+<script>
+function appScript(src) {
+	let firstScript = document.querySelector('script')
+	let script = document.createElement('script')
+	script.src = src + '?t=' + Date.now()
+	firstScript.parentNode.appendChild(script)
+}
+(function() {
+	// appScript('/dist/DBezier.js')
+	appScript('index.js')
+}())
+</script>
+</body>
+</html>

@@ -13,7 +13,7 @@ function current() {
 
 // 输入参数
 const inputOption = {
-	input: path.resolve(__dirname, '../index.js'),
+	input: path.resolve(__dirname, '../src/index.js'),
 	plugins: [
 		commonjs(),
 		babel(),
@@ -24,9 +24,9 @@ const inputOption = {
 // 输出参数
 const outputOption = {
 	format: 'umd',
-	file: path.resolve(__dirname, '../dist/drawRender.js'),
+	file: path.resolve(__dirname, '../dist/DBezier.js'),
 	sourcemap: true,
-	name: 'drawRender'
+	name: 'DBezier'
 }
 
 function minify(outPath) {
